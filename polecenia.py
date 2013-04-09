@@ -2,22 +2,22 @@
 import math
 import time
 
-WHEEL_R = 2
+WHEEL_R = 2.0
 ROBOT_R = 5.2
-REV_STEP = 1/512 #revision per one step series (8 output combinations)
+REV_STEP = 1.0/512.0 #revision per one step series (8 output combinations)
 
-L_1 = pin1
-L_2 = pin2
-L_3 = pin3
-L_4 = pin4
+L_1 = "pin1"
+L_2 = "pin2"
+L_3 = "pin3"
+L_4 = "pin4"
 
-R_1 = pin5
-R_2 = pin6
-R_3 = pin7
-R_4 = pin8
+R_1 = "pin5"
+R_2 = "pin6"
+R_3 = "pin7"
+R_4 = "pin8"
 
-MAZAK_UP = pin16
-MAZAK_DOWN = pin17
+MAZAK_UP = "pin16"
+MAZAK_DOWN = "pin17"
 
 usleep = lambda x: time.sleep(x/1000000.0) #sleep for microseconds definition
 
@@ -48,7 +48,7 @@ class Vector2D ():
     return self.x * self.x + self.y * self.y
  
   def length(self):
-    return sqrt(self.sqr_length())
+    return math.sqrt(self.sqr_length())
  
   def scale(self, factor):
     return Vector2D(self.x * factor, self.y * factor)
@@ -61,8 +61,8 @@ class Vector2D ():
     v.normalize_inplace()
     return v
  
-  def equals(self, other):
-    return sqr(self.x - other.x) + sqr(self.y - other.y) &lt; ZERO_DISTANCE_SQR
+  #def equals(self, other):
+  #  return sqr(self.x - other.x) + sqr(self.y - other.y) &lt; ZERO_DISTANCE_SQR
  
   def perp_op(self):
     return Vector2D(-self.y, self.x)
@@ -85,15 +85,15 @@ class Vector2D ():
     return new_vector
   
   def angle(self, other):
-	rad = atan2( (- self.y * other.x + self.x * other.y), (self.x * other.x + self.y * other.y))
+	rad = math.atan2( (- self.y * other.x + self.x * other.y), (self.x * other.x + self.y * other.y))
 	
 	return rad
 	
-  def angleFromPoints(now, next, prev):
-	v0 = neg(sub(prev, now))
-	v1 = sub(next, now)
+  def angleFromPoints(now, next_p, prev):
+	v0 = Vector2D.neg(Vector2D.sub(prev, now))
+	v1 = Vector2D.sub(next_p, now)
 	
-	return angle(v0, v1)
+	return Vector2D.angle(v0, v1)
 
 class switch(object):
   def __init__(self, value):
@@ -116,7 +116,8 @@ class switch(object):
       return False
 	  
 def goStep(): # goes one 5.75 deg, step, LEFT motor spins counter-clokwise, RIGHT clockwise
-  for x in range(7):
+  for x in range(8):
+      
 	print(L_1," : 0")
 	print(L_2," : 0")
 	print(L_3," : 0")
@@ -214,8 +215,8 @@ def goStep(): # goes one 5.75 deg, step, LEFT motor spins counter-clokwise, RIGH
 	usleep(1000)
 
 def spinCCW(steps): #function responsible for spining counterclockwise (left) for specified number of steps
-  for y in xrange(1,steps):
-    
+  for y in xrange(0,steps):
+      
 	  print(L_1," : 1")
 	  print(L_2," : 0")
 	  print(L_3," : 0")
@@ -313,7 +314,7 @@ def spinCCW(steps): #function responsible for spining counterclockwise (left) fo
 	  usleep(1000)
 
 def spinCW(steps): #spin clockwise (right) for given number of steps
-  for y in xrange(1,steps):
+  for y in xrange(0,steps):
     print(L_1," : 0")
     print(L_2," : 0")
     print(L_3," : 0")
@@ -414,23 +415,23 @@ def clearPins():
   print("Cleared")
   
 def liftMazak():
-  print(MAZAK_DOWN," : 0)
-  print(MAZAK_UP," : 1)
+  print(MAZAK_DOWN," : 0")
+  print(MAZAK_UP," : 1")
   
-  sleep(0.5)
+  time.sleep(0.5)
   
-  print(MAZAK_UP," : 0)
+  print(MAZAK_UP," : 0")
   
 def dropMazak():
-  print(MAZAK_UP," : 0)
-  print(MAZAK_DOWN," : 1)
+  print(MAZAK_UP," : 0")
+  print(MAZAK_DOWN," : 1")
   
-  sleep(0.5)
+  time.sleep(0.5)
   
-  print(MAZAK_DOWN," : 0)
+  print(MAZAK_DOWN," : 0")
   
 def stepsForRotation(radians): #function returning aproximated number of steps taken to spin for a given rotation in radians
-  deg = degrees(radians)
+  deg = math.degrees(radians)
   
-  return round(((2*pi*ROBOT_R*(deg/360.0))/(2*pi*WHEEL_R*REV_STEP)),0)
+  return round(((2.0*math.pi*ROBOT_R*(deg/360.0))/(2.0*math.pi*WHEEL_R*REV_STEP)),0)
   
