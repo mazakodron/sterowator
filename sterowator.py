@@ -2,9 +2,9 @@
 import math
 import time
 
-WHEEL_R = 2.0
-ROBOT_R = 5.2
-REV_STEP = 1.0/512.0 #revision per one step series (8 output combinations)
+WHEEL_R = 200.0 #promień koła (w milimetrach)
+ROBOT_R = 520.0 #odległość między pisakiem a kołem - połowa odległości rozstawu kół (w milimetrach)
+REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
 L_1 = "pin1"
 L_2 = "pin2"
@@ -19,7 +19,7 @@ R_4 = "pin9"
 MAZAK_UP = "pin16"
 MAZAK_DOWN = "pin17"
 
-usleep = lambda x: time.sleep(x/1000000.0) #sleep for microseconds definition
+usleep = lambda x: time.sleep(x/1000000.0) #definicja sleep w mikrosekundach
 
 class Vector2D ():
   def __init__(self, x, y):
@@ -27,7 +27,7 @@ class Vector2D ():
     self.y = y
  
   def __str__(self):
-      return '[%f, %f]' % (self.x, self.y)
+    return '[%f, %f]' % (self.x, self.y)
  
   def neg(self):
     return Vector2D(-self.x, -self.y)
@@ -95,206 +95,204 @@ class Vector2D ():
 	
 	return Vector2D.angle(v0, v1)
 
-	  
-def goStep(): # goes one 5.75 deg, step, LEFT motor spins counter-clokwise, RIGHT clockwise
+  
+def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do przodu, lewy silnik kręci się przeciwnie do ruchu wskazówek zegara, prawy zgodnie z ruchem wskazówek zegara
   for x in range(8):
-      
-	print(L_1," : 0")
-	print(L_2," : 0")
-	print(L_3," : 0")
-	print(L_4," : 1")
+    print(L_1," : 0")
+    print(L_2," : 0")
+    print(L_3," : 0")
+    print(L_4," : 1")
+    
+    print(R_1," : 1")
+    print(R_2," : 0")
+    print(R_3," : 0")
+    print(R_4," : 1")
 	
-	print(R_1," : 1")
-	print(R_2," : 0")
-	print(R_3," : 0")
-	print(R_4," : 1")
-	
-	usleep(1000)
-	
-	#print(L_1," : 0")
-	#print(L_2," : 0")
-	print(L_3," : 1")
-	#print(L_4," : 1")
-	
-	#print(R_1," : 1")
-	#print(R_2," : 0")
-	#print(R_3," : 0")
-	print(R_4," : 0")
-	
-	usleep(1000)
-	
-	#print(L_1," : 0")
-	#print(L_2," : 0")
-	#print(L_3," : 1")
-	print(L_4," : 0")
-	
-	#print(R_1," : 1")
-	print(R_2," : 1")
-	#print(R_3," : 0")
-	#print(R_4," : 0")
-	
-	usleep(1000)
-	
-	#print(L_1," : 0")
-	print(L_2," : 1")
-	#print(L_3," : 1")
-	#print(L_4," : 0")
-	
-	print(R_1," : 0")
-	#print(R_2," : 1")
-	#print(R_3," : 0")
-	#print(R_4," : 0")
-	
-	usleep(1000)
-	
-	#print(L_1," : 0")
-	#print(L_2," : 1")
-	print(L_3," : 0")
-	#print(L_4," : 0")
-	
-	#print(R_1," : 0")
-	#print(R_2," : 1")
-	print(R_3," : 1")
-	#print(R_4," : 0")
-	
-	usleep(1000)
-	
-	print(L_1," : 1")
-	#print(L_2," : 1")
-	#print(L_3," : 0")
-	#print(L_4," : 0")
-	
-	#print(R_1," : 0")
-	print(R_2," : 0")
-	#print(R_3," : 1")
-	#print(R_4," : 0")
-	
-	usleep(1000)
-	
-	#print(L_1," : 1")
-	print(L_2," : 0")
-	#print(L_3," : 0")
-	#print(L_4," : 0")
-	
-	#print(R_1," : 0")
-	#print(R_2," : 0")
-	#print(R_3," : 1")
-	print(R_4," : 1")
-	
-	usleep(1000)
-	
-	#print(L_1," : 1")
-	#print(L_2," : 0")
-	#print(L_3," : 0")
-	print(L_4," : 1")
-	
-	#print(R_1," : 0")
-	#print(R_2," : 0")
-	print(R_3," : 0")
-	#print(R_4," : 1")
-	
-	usleep(1000)
+    usleep(1000)
+    
+    #print(L_1," : 0")
+    #print(L_2," : 0")
+    print(L_3," : 1")
+    #print(L_4," : 1")
 
-def spinCCW(steps): #function responsible for spining counterclockwise (left) for specified number of steps
+    #print(R_1," : 1")
+    #print(R_2," : 0")
+    #print(R_3," : 0")
+    print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 0")
+    #print(L_2," : 0")
+    #print(L_3," : 1")
+    print(L_4," : 0")
+
+    #print(R_1," : 1")
+    print(R_2," : 1")
+    #print(R_3," : 0")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 0")
+    print(L_2," : 1")
+    #print(L_3," : 1")
+    #print(L_4," : 0")
+
+    print(R_1," : 0")
+    #print(R_2," : 1")
+    #print(R_3," : 0")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 0")
+    #print(L_2," : 1")
+    print(L_3," : 0")
+    #print(L_4," : 0")
+
+    #print(R_1," : 0")
+    #print(R_2," : 1")
+    print(R_3," : 1")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    print(L_1," : 1")
+    #print(L_2," : 1")
+    #print(L_3," : 0")
+    #print(L_4," : 0")
+
+    #print(R_1," : 0")
+    print(R_2," : 0")
+    #print(R_3," : 1")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 1")
+    print(L_2," : 0")
+    #print(L_3," : 0")
+    #print(L_4," : 0")
+
+    #print(R_1," : 0")
+    #print(R_2," : 0")
+    #print(R_3," : 1")
+    print(R_4," : 1")
+
+    usleep(1000)
+
+    #print(L_1," : 1")
+    #print(L_2," : 0")
+    #print(L_3," : 0")
+    print(L_4," : 1")
+
+    #print(R_1," : 0")
+    #print(R_2," : 0")
+    print(R_3," : 0")
+    #print(R_4," : 1")
+
+    usleep(1000)
+
+def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
-      
-	  print(L_1," : 1")
-	  print(L_2," : 0")
-	  print(L_3," : 0")
-	  print(L_4," : 1")
-	
-	  print(R_1," : 1")
-	  print(R_2," : 0")
-	  print(R_3," : 0")
-	  print(R_4," : 1")
-	
-	  usleep(1000)
-	
-	  #print(L_1," : 1")
-	  #print(L_2," : 0")
-	  #print(L_3," : 0")
-	  print(L_4," : 0")
-	
-	  #print(R_1," : 1")
-	  #print(R_2," : 0")
-	  #print(R_3," : 0")
-	  print(R_4," : 0")
-	
-	  usleep(1000)
-	
-	  #print(L_1," : 1")
-	  print(L_2," : 1")
-	  #print(L_3," : 0")
-	  #print(L_4," : 0")
-	
-	  #print(R_1," : 1")
-	  print(R_2," : 1")
-	  #print(R_3," : 0")
-	  #print(R_4," : 0")
-	
-	  usleep(1000)
-	
-	  print(L_1," : 0")
-	  #print(L_2," : 1")
-	  #print(L_3," : 0")
-	  #print(L_4," : 0")
-	
-	  print(R_1," : 0")
-	  #print(R_2," : 1")
-	  #print(R_3," : 0")
-	  #print(R_4," : 0")
-	
-	  usleep(1000)
-	
-	  #print(L_1," : 0")
-	  #print(L_2," : 1")
-	  print(L_3," : 1")
-	  #print(L_4," : 0")
-	
-	  #print(R_1," : 0")
-	  #print(R_2," : 1")
-	  print(R_3," : 1")
-	  #print(R_4," : 0")
-	
-	  usleep(1000)
-	
-	  #print(L_1," : 0")
-	  print(L_2," : 0")
-	  #print(L_3," : 1")
-	  #print(L_4," : 0")
-	
-	  #print(R_1," : 0")
-	  print(R_2," : 0")
-	  #print(R_3," : 1")
-	  #print(R_4," : 0")
-	
-	  usleep(1000)
-	
-	  #print(L_1," : 0")
-	  #print(L_2," : 0")
-	  #print(L_3," : 1")
-	  print(L_4," : 1")
-	
-	  #print(R_1," : 0")
-	  #print(R_2," : 0")
-	  #print(R_3," : 1")
-	  print(R_4," : 1")
-	
-	  usleep(1000)
-	
-	  #print(L_1," : 0")
-	  #print(L_2," : 0")
-	  print(L_3," : 0")
-	  #print(L_4," : 1")
-	
-	  #print(R_1," : 0")
-	  #print(R_2," : 0")
-	  print(R_3," : 0")
-	  #print(R_4," : 1")
-	
-	  usleep(1000)
+    print(L_1," : 1")
+    print(L_2," : 0")
+    print(L_3," : 0")
+    print(L_4," : 1")
+    
+    print(R_1," : 1")
+    print(R_2," : 0")
+    print(R_3," : 0")
+    print(R_4," : 1")
 
-def spinCW(steps): #spin clockwise (right) for given number of steps
+    usleep(1000)
+
+    #print(L_1," : 1")
+    #print(L_2," : 0")
+    #print(L_3," : 0")
+    print(L_4," : 0")
+
+    #print(R_1," : 1")
+    #print(R_2," : 0")
+    #print(R_3," : 0")
+    print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 1")
+    print(L_2," : 1")
+    #print(L_3," : 0")
+    #print(L_4," : 0")
+
+    #print(R_1," : 1")
+    print(R_2," : 1")
+    #print(R_3," : 0")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    print(L_1," : 0")
+    #print(L_2," : 1")
+    #print(L_3," : 0")
+    #print(L_4," : 0")
+
+    print(R_1," : 0")
+    #print(R_2," : 1")
+    #print(R_3," : 0")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 0")
+    #print(L_2," : 1")
+    print(L_3," : 1")
+    #print(L_4," : 0")
+
+    #print(R_1," : 0")
+    #print(R_2," : 1")
+    print(R_3," : 1")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 0")
+    print(L_2," : 0")
+    #print(L_3," : 1")
+    #print(L_4," : 0")
+
+    #print(R_1," : 0")
+    print(R_2," : 0")
+    #print(R_3," : 1")
+    #print(R_4," : 0")
+
+    usleep(1000)
+
+    #print(L_1," : 0")
+    #print(L_2," : 0")
+    #print(L_3," : 1")
+    print(L_4," : 1")
+
+    #print(R_1," : 0")
+    #print(R_2," : 0")
+    #print(R_3," : 1")
+    print(R_4," : 1")
+
+    usleep(1000)
+
+    #print(L_1," : 0")
+    #print(L_2," : 0")
+    print(L_3," : 0")
+    #print(L_4," : 1")
+
+    #print(R_1," : 0")
+    #print(R_2," : 0")
+    print(R_3," : 0")
+    #print(R_4," : 1")
+
+    usleep(1000)
+
+def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
     print(L_1," : 0")
     print(L_2," : 0")
@@ -392,10 +390,10 @@ def spinCW(steps): #spin clockwise (right) for given number of steps
 
     usleep(1000)
 
-def clearPins():
+def clearPins(): #wyczyszczenie wszystkich pinów
   print("Cleared")
   
-def liftMazak():
+def liftMazak(): #podniesienie mazaka
   print(MAZAK_DOWN," : 0")
   print(MAZAK_UP," : 1")
   
@@ -403,7 +401,7 @@ def liftMazak():
   
   print(MAZAK_UP," : 0")
   
-def dropMazak():
+def dropMazak(): #opuszczenie mazaka
   print(MAZAK_UP," : 0")
   print(MAZAK_DOWN," : 1")
   
@@ -411,7 +409,7 @@ def dropMazak():
   
   print(MAZAK_DOWN," : 0")
   
-def stepsForRotation(radians): #function returning aproximated number of steps taken to spin for a given rotation in radians
+def stepsForRotation(radians): #funkcja zwracająca przybliżoną do całkowitej liczbę kroków (8 krokowych ciągów) jakie trzeba wykonać by obrócić się o podany w radianach kąt
   deg = math.degrees(radians)
   
   return round(((2.0*math.pi*ROBOT_R*(deg/360.0))/(2.0*math.pi*WHEEL_R*REV_STEP)),0)
