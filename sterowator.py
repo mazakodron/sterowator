@@ -9,8 +9,8 @@ from parapin.CONST import *
 
 from sys import argv
 
-WHEEL_R = 200.0 #promien koła (w milimetrach)
-ROBOT_R = 520.0 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
+WHEEL_R = 18.0 #promien koła (w milimetrach)
+ROBOT_R = 72.0 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
 MOTOR_DELAY = 1200.0 #opóźnienie między krokami w mikrosekundach
@@ -312,6 +312,8 @@ if __name__ == "__main__":
           spinCW(st)
       
       goStep()
+      p3 = p1
+      p1 = p2
       
     line = fd.readline()
     
