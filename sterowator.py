@@ -1,23 +1,29 @@
 #!/usr/bin/python2
+#-*-coding: UTF-8 -*-
 import math
 import time
+import os
+import parapin
+from parapin.CONST import *
 
-WHEEL_R = 200.0 #promień koła (w milimetrach)
-ROBOT_R = 520.0 #odległość między pisakiem a kołem - połowa odległości rozstawu kół (w milimetrach)
+WHEEL_R = 200.0 #promien koła (w milimetrach)
+ROBOT_R = 520.0 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
-L_1 = "pin1"
-L_2 = "pin2"
-L_3 = "pin3"
-L_4 = "pin4"
+port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17)
 
-R_1 = "pin5"
-R_2 = "pin7"
-R_3 = "pin8"
-R_4 = "pin9"
+L_1 = parapin.Pin(LP_PIN01)
+L_2 = parapin.Pin(LP_PIN02)
+L_3 = parapin.Pin(LP_PIN03)
+L_4 = parapin.Pin(LP_PIN04)
 
-MAZAK_UP = "pin16"
-MAZAK_DOWN = "pin17"
+R_1 = parapin.Pin(LP_PIN05)
+R_2 = parapin.Pin(LP_PIN07)
+R_3 = parapin.Pin(LP_PIN08)
+R_4 = parapin.Pin(LP_PIN09)
+
+MAZAK_UP = parapin.Pin(LP_PIN16)
+MAZAK_DOWN = parapin.Pin(LP_PIN17)
 
 usleep = lambda x: time.sleep(x/1000000.0) #definicja sleep w mikrosekundach
 
@@ -98,48 +104,48 @@ class Vector2D ():
   
 def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do przodu, lewy silnik kręci się przeciwnie do ruchu wskazówek zegara, prawy zgodnie z ruchem wskazówek zegara
   for x in range(8):
-    print(L_1," : 0")
-    print(L_2," : 0")
-    print(L_3," : 0")
-    print(L_4," : 1")
+    L_1.clear()
+    L_2.clear()
+    L_3.clear()
+    L_4.set()
     
-    print(R_1," : 1")
-    print(R_2," : 0")
-    print(R_3," : 0")
-    print(R_4," : 1")
+    R_1.set()
+    R_2.clear()
+    R_3.clear()
+    R_4.set()
 	
     usleep(1000)
     
     #print(L_1," : 0")
     #print(L_2," : 0")
-    print(L_3," : 1")
+    L_3.set()
     #print(L_4," : 1")
 
     #print(R_1," : 1")
     #print(R_2," : 0")
     #print(R_3," : 0")
-    print(R_4," : 0")
+    R_4.clear()
 
     usleep(1000)
 
     #print(L_1," : 0")
     #print(L_2," : 0")
     #print(L_3," : 1")
-    print(L_4," : 0")
+    L_4.clear()
 
     #print(R_1," : 1")
-    print(R_2," : 1")
+    R_2.set()
     #print(R_3," : 0")
     #print(R_4," : 0")
 
     usleep(1000)
 
     #print(L_1," : 0")
-    print(L_2," : 1")
+    L_2.set()
     #print(L_3," : 1")
     #print(L_4," : 0")
 
-    print(R_1," : 0")
+    R_1.clear()
     #print(R_2," : 1")
     #print(R_3," : 0")
     #print(R_4," : 0")
@@ -148,96 +154,96 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
 
     #print(L_1," : 0")
     #print(L_2," : 1")
-    print(L_3," : 0")
+    L_3.clear()
     #print(L_4," : 0")
 
     #print(R_1," : 0")
     #print(R_2," : 1")
-    print(R_3," : 1")
+    R_3.set()
     #print(R_4," : 0")
 
     usleep(1000)
 
-    print(L_1," : 1")
+    L_1.set()
     #print(L_2," : 1")
     #print(L_3," : 0")
     #print(L_4," : 0")
 
     #print(R_1," : 0")
-    print(R_2," : 0")
+    R_2.clear()
     #print(R_3," : 1")
     #print(R_4," : 0")
 
     usleep(1000)
 
     #print(L_1," : 1")
-    print(L_2," : 0")
+    L_2.clear()
     #print(L_3," : 0")
     #print(L_4," : 0")
 
     #print(R_1," : 0")
     #print(R_2," : 0")
     #print(R_3," : 1")
-    print(R_4," : 1")
+    R_4.set()
 
     usleep(1000)
 
     #print(L_1," : 1")
     #print(L_2," : 0")
     #print(L_3," : 0")
-    print(L_4," : 1")
+    L_4.set()
 
     #print(R_1," : 0")
     #print(R_2," : 0")
-    print(R_3," : 0")
+    R_3.clear()
     #print(R_4," : 1")
 
     usleep(1000)
 
 def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
-    print(L_1," : 1")
-    print(L_2," : 0")
-    print(L_3," : 0")
-    print(L_4," : 1")
+    L_1.set()
+    L_2.clear()
+    L_3.clear()
+    L_4.set()
     
-    print(R_1," : 1")
-    print(R_2," : 0")
-    print(R_3," : 0")
-    print(R_4," : 1")
+    R_1.set()
+    R_2.clear()
+    R_3.clear()
+    R_4.set()
 
     usleep(1000)
 
     #print(L_1," : 1")
     #print(L_2," : 0")
     #print(L_3," : 0")
-    print(L_4," : 0")
+    L_4.clear()
 
     #print(R_1," : 1")
     #print(R_2," : 0")
     #print(R_3," : 0")
-    print(R_4," : 0")
+    R_4.clear()
 
     usleep(1000)
 
     #print(L_1," : 1")
-    print(L_2," : 1")
+    L_2.set()
     #print(L_3," : 0")
     #print(L_4," : 0")
 
     #print(R_1," : 1")
-    print(R_2," : 1")
+    R_2.set()
     #print(R_3," : 0")
     #print(R_4," : 0")
 
     usleep(1000)
 
-    print(L_1," : 0")
+    L_1.clear()
     #print(L_2," : 1")
     #print(L_3," : 0")
     #print(L_4," : 0")
 
-    print(R_1," : 0")
+    R_1.clear()
     #print(R_2," : 1")
     #print(R_3," : 0")
     #print(R_4," : 0")
@@ -246,23 +252,23 @@ def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruch
 
     #print(L_1," : 0")
     #print(L_2," : 1")
-    print(L_3," : 1")
+    L_3.set()
     #print(L_4," : 0")
 
     #print(R_1," : 0")
     #print(R_2," : 1")
-    print(R_3," : 1")
+    R_3.set()
     #print(R_4," : 0")
 
     usleep(1000)
 
     #print(L_1," : 0")
-    print(L_2," : 0")
+    L_2.clear()
     #print(L_3," : 1")
     #print(L_4," : 0")
 
     #print(R_1," : 0")
-    print(R_2," : 0")
+    R_2.clear()
     #print(R_3," : 1")
     #print(R_4," : 0")
 
@@ -271,49 +277,49 @@ def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruch
     #print(L_1," : 0")
     #print(L_2," : 0")
     #print(L_3," : 1")
-    print(L_4," : 1")
+    L_4.set()
 
     #print(R_1," : 0")
     #print(R_2," : 0")
     #print(R_3," : 1")
-    print(R_4," : 1")
+    R_4.set()
 
     usleep(1000)
 
     #print(L_1," : 0")
     #print(L_2," : 0")
-    print(L_3," : 0")
+    L_3.clear()
     #print(L_4," : 1")
 
     #print(R_1," : 0")
     #print(R_2," : 0")
-    print(R_3," : 0")
+    R_3.clear()
     #print(R_4," : 1")
 
     usleep(1000)
 
 def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
-    print(L_1," : 0")
-    print(L_2," : 0")
-    print(L_3," : 0")
-    print(L_4," : 1")
+    L_1.clear()
+    L_2.clear()
+    L_3.clear()
+    L_4.set()
 
-    print(R_1," : 0")
-    print(R_2," : 0")
-    print(R_3," : 0")
-    print(R_4," : 1")
+    R_1.clear()
+    R_2.clear()
+    R_3.clear()
+    R_4.set()
 	
     usleep(1000)
 
     #print(L_1," : 0")
     #print(L_2," : 0")
-    print(L_3," : 1")
+    L_3.set()
     #print(L_4," : 1")
 
     #print(R_1," : 0")
     #print(R_2," : 0")
-    print(R_3," : 1")
+    R_3.set()
     #print(R_4," : 1")
 	
     usleep(1000)
@@ -321,22 +327,22 @@ def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem ws
     #print(L_1," : 0")
     #print(L_2," : 0")
     #print(L_3," : 1")
-    print(L_4," : 0")
+    L_4.clear()
 
     #print(R_1," : 0")
     #print(R_2," : 0")
     #print(R_3," : 1")
-    print(R_4," : 0")
+    R_4.clear()
 
     usleep(1000)
 
     #print(L_1," : 0")
-    print(L_2," : 1")
+    L_2.set()
     #print(L_3," : 1")
     #print(L_4," : 0")
 
     #print(R_1," : 0")
-    print(R_2," : 1")
+    R_2.set()
     #print(R_3," : 1")
     #print(R_4," : 0")
 
@@ -344,22 +350,22 @@ def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem ws
 
     #print(L_1," : 0")
     #print(L_2," : 1")
-    print(L_3," : 0")
+    L_3.clear()
     #print(L_4," : 0")
 
     #print(R_1," : 0")
     #print(R_2," : 1")
-    print(R_3," : 0")
+    R_3.clear()
     #print(R_4," : 0")
 
     usleep(1000)
 
-    print(L_1," : 1")
+    L_1.set()
     #print(L_2," : 1")
     #print(L_3," : 0")
     #print(L_4," : 0")
 
-    print(R_1," : 1")
+    R_1.set()
     #print(R_2," : 1")
     #print(R_3," : 0")
     #print(R_4," : 0")
@@ -367,12 +373,12 @@ def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem ws
     usleep(1000)
 
     #print(L_1," : 1")
-    print(L_2," : 0")
+    L_2.clear()
     #print(L_3," : 0")
     #print(L_4," : 0")
 
     #print(R_1," : 1")
-    print(R_2," : 0")
+    R_2.clear()
     #print(R_3," : 0")
     #print(R_4," : 0")
 
@@ -381,33 +387,42 @@ def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem ws
     #print(L_1," : 1")
     #print(L_2," : 0")
     #print(L_3," : 0")
-    print(L_4," : 1")
+    L_4.set()
 
     #print(R_1," : 1")
     #print(R_2," : 0")
     #print(R_3," : 0")
-    print(R_4," : 1")
+    R_4.set()
 
     usleep(1000)
 
 def clearPins(): #wyczyszczenie wszystkich pinów
-  print("Cleared")
+  L_1.clear()
+  L_2.clear()
+  L_3.clear()
+  L_4.clear()
+  R_1.clear()
+  R_2.clear()
+  R_3.clear()
+  R_4.clear()
+  MAZAK_UP.clear()
+  MAZAK_DOWN.clear()
   
 def liftMazak(): #podniesienie mazaka
-  print(MAZAK_DOWN," : 0")
-  print(MAZAK_UP," : 1")
+  MAZAK_DOWN.clear()
+  MAZAK_UP.set()
   
   time.sleep(0.5)
   
-  print(MAZAK_UP," : 0")
+  MAZAK_UP.clear()
   
 def dropMazak(): #opuszczenie mazaka
-  print(MAZAK_UP," : 0")
-  print(MAZAK_DOWN," : 1")
+  MAZAK_UP.clear()
+  MAZAK_DOWN.set()
   
   time.sleep(0.5)
   
-  print(MAZAK_DOWN," : 0")
+  MAZAK_DOWN.clear()
   
 def stepsForRotation(radians): #funkcja zwracająca przybliżoną do całkowitej liczbę kroków (8 krokowych ciągów) jakie trzeba wykonać by obrócić się o podany w radianach kąt
   deg = math.degrees(radians)
