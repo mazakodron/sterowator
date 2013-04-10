@@ -1,4 +1,4 @@
-poleceniator
+sterowator
 ============
 
-Poleceniator 1000 - interpreter poleceń sterujących Mazakodronem 3000
+Sterowator 2000 - interpreter poleceń sterujących Mazakodronem 3000
