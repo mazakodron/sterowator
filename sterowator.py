@@ -12,9 +12,9 @@ L_3 = "pin3"
 L_4 = "pin4"
 
 R_1 = "pin5"
-R_2 = "pin6"
-R_3 = "pin7"
-R_4 = "pin8"
+R_2 = "pin7"
+R_3 = "pin8"
+R_4 = "pin9"
 
 MAZAK_UP = "pin16"
 MAZAK_DOWN = "pin17"
