@@ -2,9 +2,12 @@
 #-*-coding: UTF-8 -*-
 import math
 import time
+
 import os
 import parapin
 from parapin.CONST import *
+
+from sys import argv
 
 WHEEL_R = 200.0 #promien koła (w milimetrach)
 ROBOT_R = 520.0 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
@@ -267,3 +270,50 @@ def stepsForRotation(radians): #funkcja zwracająca przybliżoną do całkowitej
   
   return round(((2.0*math.pi*ROBOT_R*(deg/360.0))/(2.0*math.pi*WHEEL_R*REV_STEP)),0)
   
+if __name__ == "__main__":
+  inputfile = ''
+  try:
+    filename = argv[1]
+  except IndexError:
+    raise AssertionError('Podaj plik z danymi')
+  
+  p1 = Vector2D(0.0,0.0)
+  p3 = Vector2D(0.0,-1.0)
+  p2 = Vector2D(0.0,0.0)
+  
+  cleanPins()
+  raw_imput("Podepnij zasilanie i wcisnij ENTER\n")
+  
+  fd = open(filename,'r')
+  line = fd.readline()
+  
+  while line:
+    if line.find('START') != -1:
+      print("Początek rysowania")
+    elif line.find('RYSUJ') != -1:
+      dropMazak()
+    elif line.find('PODNIES') != -1:
+      liftMazak()
+    elif line.find('KONIEC') != -1:
+      print("Koniec rysowania")
+    elif line.find('=') == -1:
+      x = float(line[:line.find(' ')])
+      y = float(line[line.find(' ')+1:-1])
+      
+      p2 = Vector2D(x,y)
+      
+      pom = Vector2D.angleFromPoints(p1,p2,p3)
+      st = stepsForRotation(math.fabs(pom))
+      
+      if st > 0 :
+        if pom > 0:
+          spinCCW(st)
+        elif pom < 0:
+          spinCW(st)
+      
+      goStep()
+      
+    line = fd.readline()
+    
+  clearPins()
+        
