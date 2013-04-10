@@ -13,7 +13,7 @@ WHEEL_R = 200.0 #promien koła (w milimetrach)
 ROBOT_R = 520.0 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
-MOTOR_DELAY = 1000.0 #opóźnienie między krokami w mikrosekundach
+MOTOR_DELAY = 1200.0 #opóźnienie między krokami w mikrosekundach
 
 port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
 
@@ -81,49 +81,49 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
     R_3.clear()
     R_4.set()
 	
-    usleep(1000)
+    usleep(MOTOR_DELAY)
     
     L_3.set()
     
     R_4.clear()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_4.clear()
 
     R_2.set()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_2.set()
 
     R_1.clear()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_3.clear()
 
     R_3.set()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_1.set()
     
     R_2.clear()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_2.clear()
 
     R_4.set()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_4.set()
 
     R_3.clear()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
 def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
@@ -137,49 +137,49 @@ def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruch
     R_3.clear()
     R_4.set()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_4.clear()
 
     R_4.clear()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_2.set()
 
     R_2.set()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_1.clear()
     
     R_1.clear()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_3.set()
     
     R_3.set()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_2.clear()
     
     R_2.clear()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_4.set()
 
     R_4.set()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_3.clear()
     
     R_3.clear()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
 def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
@@ -193,49 +193,49 @@ def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem ws
     R_3.clear()
     R_4.set()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_3.set()
     
     R_3.set()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_4.clear()
 
     R_4.clear()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_2.set()
     
     R_2.set()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_3.clear()
     
     R_3.clear()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_1.set()
     
     R_1.set()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_2.clear()
     
     R_2.clear()
     
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
     L_4.set()
 
     R_4.set()
 
-    usleep(1000)
+    usleep(MOTOR_DELAY)
 
 def clearPins(): #wyczyszczenie wszystkich pinów
   L_1.clear()
