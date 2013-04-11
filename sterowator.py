@@ -17,6 +17,8 @@ MOTOR_DELAY = 1200.0 #opóźnienie między krokami w mikrosekundach
 
 port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
 
+mazak_lifted = False
+
 #zmienne z pinami
 L_1 = port.get_pin(9) #Lewego silnika
 L_2 = port.get_pin(8)
@@ -307,20 +309,27 @@ if __name__ == "__main__":
     if line.find('START') != -1:
       print("[%3d%%] Początek rysowania" % progress(i,lines))
       liftMazak()
+      mazak_lifted = True
     elif line.find('OPUSC') != -1:
       print("[%3d%%] Opuszczanie mazaka..." % progress(i,lines))
-      dropMazak()
+      if mazak_lifted:
+        dropMazak()
+      mazak_lifted = False
     elif line.find('PODNIES') != -1:
       print("[%3d%%] Podnoszenie mazaka..." % progress(i,lines))
-      liftMazak()
+      if not mazak_lifted:
+        liftMazak()
+      mazak_lifted = True
     elif line.find('KONIEC') != -1:
       print("[%3d%%] Koniec rysowania" % progress(i,lines))
-      liftMazak()
+      if not mazak_lifted:
+        liftMazak()
+      mazak_lifted = True
       break
     elif line.find('=') == -1:
       x = float(line[:line.find(' ')])
       y = float(line[line.find(' ')+1:-1])
-      print("[%3d%%] Jadę do punktu %.2f %.2f" % (progress(i,lines), x, y))
+      print("[%3d%%] %s do punktu %.2f %.2f" % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', x, y))
       p2 = Vector2D(x,y)
       
       pom = Vector2D.angleFromPoints(p1,p2,p3)
