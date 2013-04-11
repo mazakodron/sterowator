@@ -1,8 +1,8 @@
 #!/usr/bin/python2
 #-*-coding: UTF-8 -*-
+from __future__ import print_function
 import math
 import time
-
 import os
 import parapin
 from parapin.CONST import *
@@ -10,7 +10,7 @@ from parapin.CONST import *
 from sys import argv
 
 WHEEL_R = 18.0 #promien koła (w milimetrach)
-ROBOT_R = 72.0 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
+ROBOT_R = 100.0 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
 MOTOR_DELAY = 1200.0 #opóźnienie między krokami w mikrosekundach
@@ -18,15 +18,15 @@ MOTOR_DELAY = 1200.0 #opóźnienie między krokami w mikrosekundach
 port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
 
 #zmienne z pinami
-L_1 = port.get_pin(1) #Lewego silnika
-L_2 = port.get_pin(2)
-L_3 = port.get_pin(3)
-L_4 = port.get_pin(4)
+L_1 = port.get_pin(9) #Lewego silnika
+L_2 = port.get_pin(8)
+L_3 = port.get_pin(7)
+L_4 = port.get_pin(5)
 
-R_1 = port.get_pin(5) #Prawego silnika
-R_2 = port.get_pin(7)
-R_3 = port.get_pin(8)
-R_4 = port.get_pin(9)
+R_1 = port.get_pin(4) #Prawego silnika
+R_2 = port.get_pin(3)
+R_3 = port.get_pin(2)
+R_4 = port.get_pin(1)
 
 MAZAK_UP = port.get_pin(16) #mazakowego silnika
 MAZAK_DOWN = port.get_pin(17)
@@ -125,8 +125,10 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
     
     usleep(MOTOR_DELAY)
 
-def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
+def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
+    if prog:
+      prog(y, steps)
     L_1.set()
     L_2.clear()
     L_3.clear()
@@ -181,8 +183,10 @@ def spinCCW(steps): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruch
     
     usleep(MOTOR_DELAY)
 
-def spinCW(steps): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
+def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
+    if prog:
+      prog(y, steps)
     L_1.clear()
     L_2.clear()
     L_3.clear()
@@ -269,53 +273,70 @@ def stepsForRotation(radians): #funkcja zwracająca przybliżoną do całkowitej
   deg = math.degrees(radians)
   
   return round(((2.0*math.pi*ROBOT_R*(deg/360.0))/(2.0*math.pi*WHEEL_R*REV_STEP)),0)
-  
+
+def progress(i, lines):
+  return int(100*i/lines)
+ 
 if __name__ == "__main__":
   inputfile = ''
   try:
     filename = argv[1]
   except IndexError:
     raise AssertionError('Podaj plik z danymi')
-  
+
+  with open(filename) as f:
+    for i, l in enumerate(f):
+      pass
+  lines = i  
+
   p1 = Vector2D(0.0,0.0)
   p3 = Vector2D(0.0,-1.0)
   p2 = Vector2D(0.0,0.0)
   
-  cleanPins()
-  raw_imput("Podepnij zasilanie i wcisnij ENTER\n")
+  clearPins()
+  raw_input("Podepnij zasilanie i wcisnij ENTER")
   
   fd = open(filename,'r')
   line = fd.readline()
+  i = 1
   
   while line:
     if line.find('START') != -1:
-      print("Początek rysowania")
-    elif line.find('RYSUJ') != -1:
+      print("[%3d%%] Początek rysowania" % progress(i,lines))
+      liftMazak()
+    elif line.find('OPUSC') != -1:
+      print("[%3d%%] Opuszczanie mazaka..." % progress(i,lines))
       dropMazak()
     elif line.find('PODNIES') != -1:
+      print("[%3d%%] Podnoszenie mazaka..." % progress(i,lines))
       liftMazak()
     elif line.find('KONIEC') != -1:
-      print("Koniec rysowania")
+      print("[%3d%%] Koniec rysowania" % progress(i,lines))
+      liftMazak()
+      break
     elif line.find('=') == -1:
       x = float(line[:line.find(' ')])
       y = float(line[line.find(' ')+1:-1])
-      
+      print("[%3d%%] Jadę do punktu %.2f %.2f" % (progress(i,lines), x, y))
       p2 = Vector2D(x,y)
       
       pom = Vector2D.angleFromPoints(p1,p2,p3)
       st = stepsForRotation(math.fabs(pom))
       
       if st > 0 :
+        def prog(i, max):
+          print(" - kroków: %d*8=%d, kąt: %.2f (%d%%)" % (st, st*8, pom, int(100*i/max)), end='\r')
         if pom > 0:
-          spinCCW(st)
+          spinCCW(int(st), prog)
         elif pom < 0:
-          spinCW(st)
-      
+          spinCW(int(st), prog)
+      print (" - step                                            ", end='\r') # yes, it's ugly :D
       goStep()
       p3 = p1
       p1 = p2
       
     line = fd.readline()
+    i+=1
     
   clearPins()
         
