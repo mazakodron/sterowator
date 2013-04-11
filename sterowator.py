@@ -57,7 +57,7 @@ class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblic
     return Vector2D(x_dif, y_dif)
  
   
-  def angle(self, other): #kąt między dwoma wektorami
+  def angle(self, other): #kąt między dwoma wektorami, 
 	rad = math.atan2( (- self.y * other.x + self.x * other.y), (self.x * other.x + self.y * other.y))
 	
 	return rad
