@@ -253,7 +253,7 @@ def liftMazak(): #podniesienie mazaka
   MAZAK_DOWN.clear()
   MAZAK_UP.set()
   
-  time.sleep(0.5)
+  time.sleep(0.1)
   
   MAZAK_UP.clear()
   
@@ -261,7 +261,7 @@ def dropMazak(): #opuszczenie mazaka
   MAZAK_UP.clear()
   MAZAK_DOWN.set()
   
-  time.sleep(0.5)
+  time.sleep(0.1)
   
   MAZAK_DOWN.clear()
   
