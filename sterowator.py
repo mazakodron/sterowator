@@ -278,6 +278,9 @@ def progress(i, lines):
   return int(100*i/lines)
  
 if __name__ == "__main__":
+
+  print("Mazakodron 3000 - Sterowator 2000")
+
   inputfile = ''
   try:
     filename = argv[1]
@@ -294,7 +297,7 @@ if __name__ == "__main__":
   p2 = Vector2D(0.0,0.0)
   
   clearPins()
-  raw_input("Podepnij zasilanie i wcisnij ENTER")
+  raw_input("Ustaw robota w lewym górnym rogu kartki, podepnij zasilanie i wcisnij ENTER")
   
   fd = open(filename,'r')
   line = fd.readline()
@@ -339,4 +342,4 @@ if __name__ == "__main__":
     i+=1
     
   clearPins()
-        
+
