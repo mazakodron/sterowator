@@ -26,6 +26,7 @@ DEBUG = len(argv)>2 and argv[2]=='debug'
 port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
 
 mazak_lifted = False
+backwards = False
 
 #zmienne z pinami
 L_1 = port.get_pin(9) #Lewego silnika
@@ -141,6 +142,63 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
     R_3.clear()
     
     msleep(MOTOR_DELAY)
+
+def goStepBackwards(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do tyłu, lewy silnik kręci się zgodnie z ruchem wskazówek zegara, prawy przeciwnie do ruchu wskazówek zegara
+  for x in range(8):
+    R_1.clear()
+    R_2.clear()
+    R_3.clear()
+    R_4.set()
+
+    L_1.set()
+    L_2.clear()
+    L_3.clear()
+    L_4.set()
+
+    msleep(MOTOR_DELAY)
+
+    R_3.set()
+
+    L_4.clear()
+
+    msleep(MOTOR_DELAY)
+
+    R_4.clear()
+
+    L_2.set()
+
+    msleep(MOTOR_DELAY)
+
+    R_2.set()
+
+    L_1.clear()
+
+    msleep(MOTOR_DELAY)
+
+    R_3.clear()
+
+    L_3.set()
+
+    msleep(MOTOR_DELAY)
+
+    R_1.set()
+
+    L_2.clear()
+
+    msleep(MOTOR_DELAY)
+
+    R_2.clear()
+
+    L_4.set()
+
+    msleep(MOTOR_DELAY)
+
+    R_4.set()
+
+    L_3.clear()
+
+    msleep(MOTOR_DELAY)
+  
 
 def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
@@ -354,12 +412,20 @@ if __name__ == "__main__":
       elif line.find('=') == -1:
         x = float(line[:line.find(' ')])
         y = float(line[line.find(' ')+1:-1])
-        print("[%3d%%] %s do punktu %.2f %.2f" % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', x, y))
         p2 = Vector2D(x,y)
       
         pom = Vector2D.angleFromPoints(p1,p2,p3)
+
+        if abs(pom) > math.pi/2:
+          pom -= math.pi/2 * abs(pom)/pom
+          backwards = True
+        else:
+          backwards = False
+        
         st = stepsForRotation(math.fabs(pom))
-      
+
+        print("[%3d%%] %s do %s do punktu %.2f %.2f" % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', 'tyłu' if backwards else 'przodu', x, y))
+        
         if st > 0 :
           def prog(i, max):
             print(" - kroków: %d*8=%d, kąt: %.2f (%d%%)" % (st, st*8, pom, int(100*i/max)), end='\r')
@@ -372,7 +438,10 @@ if __name__ == "__main__":
           print("[%3d%%] Opuszczanie mazaka..." % progress(i,lines))
           dropMazak()
           dropRequest = False
-        goStep()
+        if backwards:
+          goStepBackwards()
+        else:
+          goStep()
         p3 = p1
         p1 = p2
       
