@@ -13,7 +13,7 @@ WHEEL_R = 18.0 #promien koła (w milimetrach)
 ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
-MOTOR_DELAY = 1200.0 #opóźnienie między krokami w mikrosekundach
+MOTOR_DELAY = 120.0 #opóźnienie między krokami w milisekundach
 
 port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
 
@@ -33,7 +33,7 @@ R_4 = port.get_pin(1)
 MAZAK_UP = port.get_pin(16) #mazakowego silnika
 MAZAK_DOWN = port.get_pin(17)
 
-usleep = lambda x: time.sleep(x/1000000.0) #definicja sleep w mikrosekundach
+msleep = lambda x: time.sleep(x/1000.0) #definicja sleep w milisekundach
 
 class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblicznia kątów obrotu robota
   def __init__(self, x, y):
@@ -83,49 +83,49 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
     R_3.clear()
     R_4.set()
 	
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
     
     L_3.set()
     
     R_4.clear()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_4.clear()
 
     R_2.set()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_2.set()
 
     R_1.clear()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_3.clear()
 
     R_3.set()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_1.set()
     
     R_2.clear()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_2.clear()
 
     R_4.set()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_4.set()
 
     R_3.clear()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
 def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
@@ -141,49 +141,49 @@ def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeci
     R_3.clear()
     R_4.set()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_4.clear()
 
     R_4.clear()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_2.set()
 
     R_2.set()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_1.clear()
     
     R_1.clear()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_3.set()
     
     R_3.set()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_2.clear()
     
     R_2.clear()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_4.set()
 
     R_4.set()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_3.clear()
     
     R_3.clear()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
 def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
@@ -199,49 +199,49 @@ def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodn
     R_3.clear()
     R_4.set()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_3.set()
     
     R_3.set()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_4.clear()
 
     R_4.clear()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_2.set()
     
     R_2.set()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_3.clear()
     
     R_3.clear()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_1.set()
     
     R_1.set()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_2.clear()
     
     R_2.clear()
     
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
     L_4.set()
 
     R_4.set()
 
-    usleep(MOTOR_DELAY)
+    msleep(MOTOR_DELAY)
 
 def clearPins(): #wyczyszczenie wszystkich pinów
   L_1.clear()
@@ -255,19 +255,19 @@ def clearPins(): #wyczyszczenie wszystkich pinów
   MAZAK_UP.clear()
   MAZAK_DOWN.clear()
   
-def liftMazak(t = 0.1): #podniesienie mazaka
+def liftMazak(t = 100): #podniesienie mazaka
   MAZAK_DOWN.clear()
   MAZAK_UP.set()
   
-  time.sleep(t)
+  msleep(t)
   
   MAZAK_UP.clear()
   
-def dropMazak(t = 0.1): #opuszczenie mazaka
+def dropMazak(t = 100): #opuszczenie mazaka
   MAZAK_UP.clear()
   MAZAK_DOWN.set()
   
-  time.sleep(t)
+  msleep(t)
   
   MAZAK_DOWN.clear()
   
@@ -311,8 +311,8 @@ if __name__ == "__main__":
     while line:
       if line.find('START') != -1:
         print("[%3d%%] Początek rysowania" % progress(i,lines))
-        liftMazak(0.2)
-        dropMazak(0.5)
+        liftMazak(200)
+        dropMazak(500)
         liftMazak()
         mazak_lifted = True
       elif line.find('OPUSC') != -1:
@@ -331,8 +331,8 @@ if __name__ == "__main__":
           liftMazak()
         dropMazak()
         liftMazak()
-        dropMazak(0.2)
-        liftMazak(0.2)
+        dropMazak(200)
+        liftMazak(200)
         mazak_lifted = True
         break
       elif line.find('=') == -1:
