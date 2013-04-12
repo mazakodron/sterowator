@@ -10,7 +10,7 @@ from parapin.CONST import *
 from sys import argv
 
 WHEEL_R = 18.0 #promien koła (w milimetrach)
-ROBOT_R = 115 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
+ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
 MOTOR_DELAY = 1200.0 #opóźnienie między krokami w mikrosekundach
@@ -263,7 +263,7 @@ def liftMazak(t = 0.1): #podniesienie mazaka
   
   MAZAK_UP.clear()
   
-def dropMazak(t = 0.5): #opuszczenie mazaka
+def dropMazak(t = 0.1): #opuszczenie mazaka
   MAZAK_UP.clear()
   MAZAK_DOWN.set()
   
@@ -297,6 +297,8 @@ if __name__ == "__main__":
   p1 = Vector2D(0.0,0.0)
   p3 = Vector2D(0.0,-1.0)
   p2 = Vector2D(0.0,0.0)
+
+  dropRequest = False
   
   clearPins()
   raw_input("Ustaw robota w lewym górnym rogu kartki, podepnij zasilanie i wcisnij ENTER")
@@ -310,13 +312,13 @@ if __name__ == "__main__":
       if line.find('START') != -1:
         print("[%3d%%] Początek rysowania" % progress(i,lines))
         liftMazak(0.2)
-        dropMazak(0.2)
+        dropMazak(0.5)
         liftMazak()
         mazak_lifted = True
       elif line.find('OPUSC') != -1:
-        print("[%3d%%] Opuszczanie mazaka..." % progress(i,lines))
+        print("[%3d%%] Żądanie opuszczenia mazaka..." % progress(i,lines))
         if mazak_lifted:
-          dropMazak()
+          dropRequest = True
         mazak_lifted = False
       elif line.find('PODNIES') != -1:
         print("[%3d%%] Podnoszenie mazaka..." % progress(i,lines))
@@ -350,6 +352,10 @@ if __name__ == "__main__":
           elif pom < 0:
             spinCW(int(st), prog)
         print (" - step                                            ", end='\r') # yes, it's ugly :D
+        if dropRequest:
+          print("[%3d%%] Opuszczanie mazaka..." % progress(i,lines))
+          dropMazak()
+          dropRequest = False
         goStep()
         p3 = p1
         p1 = p2
