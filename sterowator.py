@@ -47,54 +47,54 @@ class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblic
   def __init__(self, x, y):
     self.x = x
     self.y = y
- 
+
   def __str__(self):
     return '[%f, %f]' % (self.x, self.y)
- 
+
   def neg(self): #negacja wektorów
     return Vector2D(-self.x, -self.y)
- 
+
   def add(self, other): #dodawanie wektorów
     x_sum = self.x + other.x
     y_sum = self.y + other.y
- 
+
     return Vector2D(x_sum, y_sum)
- 
+
   def sub(self, other): #odejmowanie wektorów
     x_dif = self.x - other.x
     y_dif = self.y - other.y
- 
-    return Vector2D(x_dif, y_dif)
- 
-  
-  def angle(self, other): #kąt między dwoma wektorami, 
-	rad = math.atan2( (- self.y * other.x + self.x * other.y), (self.x * other.x + self.y * other.y))
-	
-	return rad
-	
-  def angleFromPoints(now, next_p, prev): #kąt między wektorami utworzonymi z 3 punktów
-	v0 = Vector2D.neg(Vector2D.sub(prev, now))
-	v1 = Vector2D.sub(next_p, now)
-	
-	return Vector2D.angle(v0, v1)
 
-  
+    return Vector2D(x_dif, y_dif)
+
+
+  def angle(self, other): #kąt między dwoma wektorami,
+    rad = math.atan2( (- self.y * other.x + self.x * other.y), (self.x * other.x + self.y * other.y))
+
+    return rad
+
+  def angleFromPoints(now, next_p, prev): #kąt między wektorami utworzonymi z 3 punktów
+    v0 = Vector2D.neg(Vector2D.sub(prev, now))
+    v1 = Vector2D.sub(next_p, now)
+
+    return Vector2D.angle(v0, v1)
+
+
 def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do przodu, lewy silnik kręci się przeciwnie do ruchu wskazówek zegara, prawy zgodnie z ruchem wskazówek zegara
   for x in range(8):
     L_1.clear()
     L_2.clear()
     L_3.clear()
     L_4.set()
-    
+
     R_1.set()
     R_2.clear()
     R_3.clear()
     R_4.set()
-	
+
     msleep(MOTOR_DELAY)
-    
+
     L_3.set()
-    
+
     R_4.clear()
 
     msleep(MOTOR_DELAY)
@@ -114,13 +114,13 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
     L_3.clear()
 
     R_3.set()
-    
+
     msleep(MOTOR_DELAY)
 
     L_1.set()
-    
+
     R_2.clear()
-    
+
     msleep(MOTOR_DELAY)
 
     L_2.clear()
@@ -132,7 +132,7 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
     L_4.set()
 
     R_3.clear()
-    
+
     msleep(MOTOR_DELAY)
 
 def goStepBackwards(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do tyłu, lewy silnik kręci się zgodnie z ruchem wskazówek zegara, prawy przeciwnie do ruchu wskazówek zegara
@@ -200,7 +200,7 @@ def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeci
     L_2.clear()
     L_3.clear()
     L_4.set()
-    
+
     R_1.set()
     R_2.clear()
     R_3.clear()
@@ -217,25 +217,25 @@ def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeci
     L_2.set()
 
     R_2.set()
-    
+
     msleep(MOTOR_DELAY)
 
     L_1.clear()
-    
+
     R_1.clear()
-    
+
     msleep(MOTOR_DELAY)
 
     L_3.set()
-    
+
     R_3.set()
-    
+
     msleep(MOTOR_DELAY)
 
     L_2.clear()
-    
+
     R_2.clear()
-    
+
     msleep(MOTOR_DELAY)
 
     L_4.set()
@@ -245,9 +245,9 @@ def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeci
     msleep(MOTOR_DELAY)
 
     L_3.clear()
-    
+
     R_3.clear()
-    
+
     msleep(MOTOR_DELAY)
 
 def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
@@ -263,13 +263,13 @@ def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodn
     R_2.clear()
     R_3.clear()
     R_4.set()
-    
+
     msleep(MOTOR_DELAY)
 
     L_3.set()
-    
+
     R_3.set()
-    
+
     msleep(MOTOR_DELAY)
 
     L_4.clear()
@@ -279,27 +279,27 @@ def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodn
     msleep(MOTOR_DELAY)
 
     L_2.set()
-    
+
     R_2.set()
-    
+
     msleep(MOTOR_DELAY)
 
     L_3.clear()
-    
+
     R_3.clear()
-    
+
     msleep(MOTOR_DELAY)
 
     L_1.set()
-    
+
     R_1.set()
-    
+
     msleep(MOTOR_DELAY)
 
     L_2.clear()
-    
+
     R_2.clear()
-    
+
     msleep(MOTOR_DELAY)
 
     L_4.set()
@@ -319,26 +319,26 @@ def clearPins(): #wyczyszczenie wszystkich pinów
   R_4.clear()
   MAZAK_UP.clear()
   MAZAK_DOWN.clear()
-  
+
 def liftMazak(t = 25): #podniesienie mazaka
   MAZAK_DOWN.clear()
   MAZAK_UP.set()
-  
+
   msleep(t)
-  
+
   MAZAK_UP.clear()
-  
+
 def dropMazak(t = 50): #opuszczenie mazaka
   MAZAK_UP.clear()
   MAZAK_DOWN.set()
-  
+
   msleep(t)
-  
+
   MAZAK_DOWN.clear()
-  
+
 def stepsForRotation(radians): #funkcja zwracająca przybliżoną do całkowitej liczbę kroków (8 krokowych ciągów) jakie trzeba wykonać by obrócić się o podany w radianach kąt
   deg = math.degrees(radians)
-  
+
   return round(((2.0*math.pi*ROBOT_R*(deg/360.0))/(2.0*math.pi*WHEEL_R*REV_STEP)),0)
 
 def progress(i, lines):
@@ -347,11 +347,11 @@ def progress(i, lines):
 def countTime(filename):
 
   mazak_lifted = False
-  
+
   p1 = Vector2D(0.0,0.0)
   p3 = Vector2D(0.0,-1.0)
   p2 = Vector2D(0.0,0.0)
-  
+
   fd = open(filename,'r')
   line = fd.readline()
   i = 1
@@ -395,9 +395,9 @@ def draw(filename):
   p1 = Vector2D(0.0,0.0)
   p3 = Vector2D(0.0,-1.0)
   p2 = Vector2D(0.0,0.0)
-  
+
   dropRequest = False
-  
+
   clearPins()
 
   fd = open(filename,'r')
@@ -486,7 +486,7 @@ def draw(filename):
   time_elapsed = int(time.time() - start_time)
   print("Upłynęło: %dm%s%ds" % (int(time_elapsed/60), '0' if time_elapsed%60<10 else '', time_elapsed%60))
   return time_elapsed
- 
+
 if __name__ == "__main__":
 
   print("Mazakodron 3000 - Sterowator 2000")
@@ -500,12 +500,12 @@ if __name__ == "__main__":
   with open(filename) as f:
     for i, l in enumerate(f):
       pass
-  lines = i  
+  lines = i
 
   eta = countTime(filename)
   print("Plik %s, ETA: %dm%s%ds" % (filename, int(eta/60), '0' if eta%60<10 else '', eta%60))
-  
+
   clearPins()
   raw_input("Ustaw robota w lewym górnym rogu kartki, podepnij zasilanie i wcisnij ENTER")
-  
+
   draw(filename)
