@@ -477,14 +477,14 @@ def draw(filename):
       i+=1
 
   except KeyboardInterrupt:
-    print("Clearing pins...                                ")
+    print("Czyszczenie pinów...                                ") # uuuuglyyyy
     liftMazak(100)
     clearPins()
     raise KeyboardInterrupt
 
   clearPins()
   time_elapsed = int(time.time() - start_time)
-  print("Time elapsed: %dm%s%ds" % (int(time_elapsed/60), '0' if time_elapsed%60<10 else '', time_elapsed%60))
+  print("Upłynęło: %dm%s%ds" % (int(time_elapsed/60), '0' if time_elapsed%60<10 else '', time_elapsed%60))
   return time_elapsed
  
 if __name__ == "__main__":
