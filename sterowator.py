@@ -4,8 +4,14 @@ from __future__ import print_function
 import math
 import time
 import os
-import parapin
-from parapin.CONST import *
+
+try:
+  import parapin
+  from parapin.CONST import *
+except ImportError:
+  print("UWAGA: Nie można załadować modułu Parapin, zostanie użyta imitacja!")
+  import parapin_mock as parapin
+  from parapin_mock import *
 
 from sys import argv
 
@@ -14,6 +20,8 @@ ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozst
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
 MOTOR_DELAY = 120.0 #opóźnienie między krokami w milisekundach
+
+DEBUG = len(argv)>2 and argv[2]=='debug'
 
 port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
 
@@ -33,7 +41,14 @@ R_4 = port.get_pin(1)
 MAZAK_UP = port.get_pin(16) #mazakowego silnika
 MAZAK_DOWN = port.get_pin(17)
 
-msleep = lambda x: time.sleep(x/1000.0) #definicja sleep w milisekundach
+timerCounter = 0
+
+if DEBUG:
+  def msleep(x):
+    global timerCounter
+    timerCounter=timerCounter+x
+else:
+  msleep = lambda x: time.sleep(x/100000.0) #definicja sleep w milisekundach
 
 class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblicznia kątów obrotu robota
   def __init__(self, x, y):
@@ -306,13 +321,14 @@ if __name__ == "__main__":
   fd = open(filename,'r')
   line = fd.readline()
   i = 1
-  
+
+  start_time = int(time.time())
   try:
     while line:
       if line.find('START') != -1:
         print("[%3d%%] Początek rysowania" % progress(i,lines))
         liftMazak(200)
-        dropMazak(500)
+        dropMazak(200)
         liftMazak()
         mazak_lifted = True
       elif line.find('OPUSC') != -1:
@@ -331,7 +347,7 @@ if __name__ == "__main__":
           liftMazak()
         dropMazak()
         liftMazak()
-        dropMazak(200)
+        dropMazak()
         liftMazak(200)
         mazak_lifted = True
         break
@@ -363,8 +379,10 @@ if __name__ == "__main__":
       line = fd.readline()
       i+=1
     
-    clearPins()
   except KeyboardInterrupt:
     print("Clearing pins...                                ")
-    liftMazak()
-    clearPins()
+    liftMazak(200)
+
+clearPins()
+time_elapsed = int(time.time() - start_time + timerCounter/100000)
+print("Time elapsed: %dm%s%ds" % (int(time_elapsed/60), '0' if time_elapsed%60<10 else '', time_elapsed%60))
