@@ -19,7 +19,7 @@ WHEEL_R = 18.0 #promien koła (w milimetrach)
 ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
 
-MOTOR_DELAY = 120.0 #opóźnienie między krokami w milisekundach
+MOTOR_DELAY = 1.00 #opóźnienie między krokami w milisekundach
 
 DEBUG = len(argv)>2 and argv[2]=='debug'
 
@@ -49,7 +49,7 @@ if DEBUG:
     global timerCounter
     timerCounter=timerCounter+x
 else:
-  msleep = lambda x: time.sleep(x/100000.0) #definicja sleep w milisekundach
+  msleep = lambda x: time.sleep(x/1000.0) #definicja sleep w milisekundach
 
 class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblicznia kątów obrotu robota
   def __init__(self, x, y):
@@ -144,6 +144,7 @@ def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu
     msleep(MOTOR_DELAY)
 
 def goStepBackwards(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do tyłu, lewy silnik kręci się zgodnie z ruchem wskazówek zegara, prawy przeciwnie do ruchu wskazówek zegara
+
   for x in range(8):
     R_1.clear()
     R_2.clear()
@@ -198,7 +199,6 @@ def goStepBackwards(): # funkcja odpowiedzialna za obrót silników o 5.625 stop
     L_3.clear()
 
     msleep(MOTOR_DELAY)
-  
 
 def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in xrange(0,steps):
@@ -328,7 +328,7 @@ def clearPins(): #wyczyszczenie wszystkich pinów
   MAZAK_UP.clear()
   MAZAK_DOWN.clear()
   
-def liftMazak(t = 100): #podniesienie mazaka
+def liftMazak(t = 50): #podniesienie mazaka
   MAZAK_DOWN.clear()
   MAZAK_UP.set()
   
@@ -385,8 +385,8 @@ if __name__ == "__main__":
     while line:
       if line.find('START') != -1:
         print("[%3d%%] Początek rysowania" % progress(i,lines))
-        liftMazak(200)
-        dropMazak(200)
+        liftMazak(100)
+        dropMazak(100)
         liftMazak()
         mazak_lifted = True
       elif line.find('OPUSC') != -1:
@@ -406,7 +406,7 @@ if __name__ == "__main__":
         dropMazak()
         liftMazak()
         dropMazak()
-        liftMazak(200)
+        liftMazak(100)
         mazak_lifted = True
         break
       elif line.find('=') == -1:
@@ -450,8 +450,8 @@ if __name__ == "__main__":
     
   except KeyboardInterrupt:
     print("Clearing pins...                                ")
-    liftMazak(200)
+    liftMazak(100)
 
 clearPins()
-time_elapsed = int(time.time() - start_time + timerCounter/100000)
+time_elapsed = int(time.time() - start_time + timerCounter/1000)
 print("Time elapsed: %dm%s%ds" % (int(time_elapsed/60), '0' if time_elapsed%60<10 else '', time_elapsed%60))
