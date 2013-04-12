@@ -255,19 +255,29 @@ def clearPins(): #wyczyszczenie wszystkich pinów
   MAZAK_UP.clear()
   MAZAK_DOWN.clear()
   
-def liftMazak(t = 0.1): #podniesienie mazaka
+def liftMazak(t = 0): #podniesienie mazaka
   MAZAK_DOWN.clear()
   MAZAK_UP.set()
   
-  time.sleep(t)
+  if t:
+    time.sleep(t)
+  else:
+    for i in range(0,5):
+      MAZAK_UP.clear()
+      MAZAK_UP.set()
   
   MAZAK_UP.clear()
   
-def dropMazak(t = 0.1): #opuszczenie mazaka
+def dropMazak(t = 0): #opuszczenie mazaka
   MAZAK_UP.clear()
   MAZAK_DOWN.set()
   
-  time.sleep(t)
+  if t:
+    time.sleep(t)
+  else:
+    for i in range(0,10):
+      MAZAK_DOWN.clear()
+      MAZAK_DOWN.set()
   
   MAZAK_DOWN.clear()
   
