@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 #-*-coding: UTF-8 -*-
 from __future__ import print_function
 import math
