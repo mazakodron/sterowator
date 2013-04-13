@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 #-*-coding: UTF-8 -*-
 from __future__ import print_function
 import math
@@ -12,6 +12,11 @@ except ImportError:
   print("UWAGA: Nie można załadować modułu Parapin, zostanie użyta imitacja!")
   import parapin_mock as parapin
   from parapin_mock import *
+
+try:
+  input = raw_input
+except NameError:
+  pass
 
 from sys import argv
 
@@ -193,7 +198,7 @@ def goStepBackwards(): # funkcja odpowiedzialna za obrót silników o 5.625 stop
     msleep(MOTOR_DELAY)
 
 def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
-  for y in xrange(0,steps):
+  for y in range(0,steps):
     if prog:
       prog(y, steps)
     L_1.set()
@@ -251,7 +256,7 @@ def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeci
     msleep(MOTOR_DELAY)
 
 def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
-  for y in xrange(0,steps):
+  for y in range(0,steps):
     if prog:
       prog(y, steps)
     L_1.clear()
@@ -506,6 +511,6 @@ if __name__ == "__main__":
   print("Plik %s, ETA: %dm%s%ds" % (filename, int(eta/60), '0' if eta%60<10 else '', eta%60))
 
   clearPins()
-  raw_input("Ustaw robota w lewym górnym rogu kartki, podepnij zasilanie i wcisnij ENTER")
+  input("Ustaw robota w lewym górnym rogu kartki, podepnij zasilanie i wcisnij ENTER")
 
   draw(filename)
