@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 #-*-coding: UTF-8 -*-
 
 class Pin():
