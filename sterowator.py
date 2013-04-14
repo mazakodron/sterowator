@@ -372,7 +372,7 @@ def countTime(filename):
     i+=1
 
   time += 500
-  return time*1.125/1000.0
+  return time*1.125/1000.0/SPEED
 
 
 def draw(filename):
