@@ -1,0 +1,3 @@
+[submodule "symulator"]
+	path = symulator
+	url = http://github.com/mazakodron/symulator.git
