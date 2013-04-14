@@ -1,6 +1,7 @@
 #!/usr/bin/python
 #-*-coding: UTF-8 -*-
 from __future__ import print_function
+from optparse import OptionParser  
 import math
 import time
 import os
@@ -20,11 +21,12 @@ REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (se
 MOTOR_DELAY = 1.0 #opóźnienie między krokami w milisekundach
 
 SPEED = 1.0
+SPEED_MOD = lambda: 0 if SPEED==0 else 1/SPEED
 
 mazak_lifted = False
 backwards = False
 
-msleep = lambda x: time.sleep((x/1000.0)/SPEED) #definicja sleep w milisekundach
+msleep = lambda x: time.sleep((x/1000.0)*SPEED_MOD()) #definicja sleep w milisekundach
 #msleep = lambda x: x
 
 class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblicznia kątów obrotu robota
@@ -372,7 +374,7 @@ def countTime(filename):
     i+=1
 
   time += 500
-  return time*1.125/1000.0/SPEED
+  return time*1.125/1000.0*SPEED_MOD()
 
 
 def draw(filename):
@@ -480,8 +482,18 @@ if __name__ == "__main__":
   print("Mazakodron 3000 - Sterowator 2000")
 
   inputfile = ''
+
+  parser = OptionParser()
+  parser.add_option("-s", "--speed", dest="speed", metavar="FLOAT", help="przyśpiesza czasy oczekiwania o podany mnożnik")
+  parser.add_option("", "--disable-simulator", dest="simulator", action="store_true", default=False, help="wyłącza symulator Mazakodronu")
+  parser.add_option("", "--disable-lpt", dest="lpt", action="store_true", help="wyłącza komunikację z robotem po porcie LPT")
+  options, args = parser.parse_args()
+
+  if options.speed:
+    SPEED = float(options.speed)
+
   try:
-    filename = argv[1]
+    filename = args[0]
   except IndexError:
     raise AssertionError('Podaj plik z danymi')
 
@@ -493,7 +505,7 @@ if __name__ == "__main__":
   eta = countTime(filename)
   print("Plik %s, ETA: %dm%s%ds" % (filename, int(eta/60), '0' if eta%60<10 else '', eta%60))
 
-  port = mazakodron.Port()
+  port = mazakodron.Port(simulator = not options.simulator, lpt = not options.lpt)
   #lpt.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
 
   #zmienne z pinami
