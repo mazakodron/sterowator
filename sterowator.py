@@ -4,14 +4,7 @@ from __future__ import print_function
 import math
 import time
 import os
-
-try:
-  import parapin
-  from parapin.CONST import *
-except ImportError:
-  print("UWAGA: Nie można załadować modułu Parapin, zostanie użyta imitacja!")
-  import parapin_mock as parapin
-  from parapin_mock import *
+import mazakodron
 
 try:
   input = raw_input
@@ -26,26 +19,12 @@ REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (se
 
 MOTOR_DELAY = 1.0 #opóźnienie między krokami w milisekundach
 
-port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
+SPEED = 1.0
 
 mazak_lifted = False
 backwards = False
 
-#zmienne z pinami
-L_1 = port.get_pin(9) #Lewego silnika
-L_2 = port.get_pin(8)
-L_3 = port.get_pin(7)
-L_4 = port.get_pin(5)
-
-R_1 = port.get_pin(4) #Prawego silnika
-R_2 = port.get_pin(3)
-R_3 = port.get_pin(2)
-R_4 = port.get_pin(1)
-
-MAZAK_UP = port.get_pin(16) #mazakowego silnika
-MAZAK_DOWN = port.get_pin(17)
-
-msleep = lambda x: time.sleep(x/1000.0) #definicja sleep w milisekundach
+msleep = lambda x: time.sleep((x/1000.0)/SPEED) #definicja sleep w milisekundach
 #msleep = lambda x: x
 
 class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblicznia kątów obrotu robota
@@ -324,6 +303,7 @@ def clearPins(): #wyczyszczenie wszystkich pinów
   R_4.clear()
   MAZAK_UP.clear()
   MAZAK_DOWN.clear()
+  END.clear()
 
 def liftMazak(t = 25): #podniesienie mazaka
   MAZAK_DOWN.clear()
@@ -402,6 +382,7 @@ def draw(filename):
   p2 = Vector2D(0.0,0.0)
 
   dropRequest = False
+  backwards = False
 
   clearPins()
 
@@ -437,6 +418,7 @@ def draw(filename):
         dropMazak()
         liftMazak(100)
         mazak_lifted = True
+        END.set()
         break
       elif line.find('=') == -1:
         x = float(line[:line.find(' ')])
@@ -445,12 +427,13 @@ def draw(filename):
 
         pom = Vector2D.angleFromPoints(p1,p2,p3)
 
+        
         if abs(pom) > math.pi/2:
-          pom -= math.pi/2 * abs(pom)/pom
-          pom *= -1
-          backwards = True
-        else:
-          backwards = False
+          if pom > 0:
+            pom = - math.pi + pom
+          else:
+            pom = math.pi + pom
+          backwards = not backwards
 
         st = stepsForRotation(math.fabs(pom))
 
@@ -510,7 +493,30 @@ if __name__ == "__main__":
   eta = countTime(filename)
   print("Plik %s, ETA: %dm%s%ds" % (filename, int(eta/60), '0' if eta%60<10 else '', eta%60))
 
+  port = mazakodron.Port()
+  #lpt.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN16|LP_PIN17) # przejęcie obsługi portu i ustawienie pinów w tryb wyjścia
+
+  #zmienne z pinami
+  L_1 = port.get_pin(9) #Lewego silnika
+  L_2 = port.get_pin(8)
+  L_3 = port.get_pin(7)
+  L_4 = port.get_pin(5)
+
+  R_1 = port.get_pin(4) #Prawego silnika
+  R_2 = port.get_pin(3)
+  R_3 = port.get_pin(2)
+  R_4 = port.get_pin(1)
+
+  MAZAK_UP = port.get_pin(16) #mazakowego silnika
+  MAZAK_DOWN = port.get_pin(17)
+
+  END = port.get_pin(14)
+
+
   clearPins()
   input("Ustaw robota w lewym górnym rogu kartki, podepnij zasilanie i wcisnij ENTER")
 
+  port.show()
   draw(filename)
+
+  port.wait()

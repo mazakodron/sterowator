@@ -7,7 +7,7 @@ Rectangle {
     property double constROBOT_R: 119.5;
     property double constWHEEL_R: 18.0;
     property double constREV_STEP: 1.0/512.0;
-    property double constSTEP: 0.220875;
+    property double constSTEP: 0.220875/8;
 
     function draw() {
       if (mazak_down) {
@@ -19,6 +19,7 @@ Rectangle {
           'y: drawing.height*'+mazak.yPos+';'+
           'rotation: '+mazak.rotation+';'+
         '}', drawing, "line");
+        // dirty hack, FIXME!
       }
     }
     function goForward() {
@@ -83,12 +84,29 @@ Rectangle {
 
         id: mazak;
 
+        opacity: 1;
         x: xPos*paper.width;//.3*paper.width;
         y: yPos*paper.height;//.3*paper.height;
         width: 0;
         height: 0;
         rotation: 0;
 
+        states: State {
+          name: "hidden"; when: robot_hidden == true;
+          PropertyChanges {
+            target: mazak;
+            opacity: 0
+          }
+        }
+        
+        transitions: Transition {
+          from: ""; to: "hidden"; reversible: true;
+          SequentialAnimation {
+            NumberAnimation { target: mazak; property: "opacity"; duration: 5000; easing.type:Easing.InQuad; }
+          }
+        }
+        
+        
         Image {
             id: mazakodron;
             x: -0.435*paper.width;
