@@ -16,7 +16,7 @@ from sys import argv
 
 WHEEL_R = 18.0 #promien koła (w milimetrach)
 ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
-REV_STEP = 1.0/512.0 #obrót osi silnika przy wykonaniu jednej serii kroków (seria 8 kroków)
+REV_STEP = 1.0/4096.0 #obrót osi silnika przy wykonaniu jednego kroku
 
 MOTOR_DELAY = 1.0 #opóźnienie między krokami w milisekundach
 
@@ -25,6 +25,9 @@ SPEED_MOD = lambda: 0 if SPEED==0 else 1/SPEED
 
 mazak_lifted = False
 backwards = False
+
+LEFT = []
+RIGHT = []
 
 msleep = lambda x: time.sleep((x/1000.0)*SPEED_MOD()) #definicja sleep w milisekundach
 #msleep = lambda x: x
@@ -64,245 +67,55 @@ class Vector2D (): #definicja klasy wektorów dwuwymiarowych, potrzebna do oblic
 
     return Vector2D.angle(v0, v1)
 
+def goPinStep(engine, forward = True):
+  prev = lambda pin: 3 if pin==0 else pin-1
+  next = lambda pin: 0 if pin==3 else pin+1
+  
+  ran = range(0, 4)
+  if not forward:
+    ran = reversed(ran)
+    next2 = next
+    next = prev
+    prev = next2
+    
+  for i in ran:
+    if engine[i]['value']:
+      if engine[next(i)]['value']:
+        engine[i]['pin'].clear()
+        engine[i]['value'] = 0
+        return
+      else:
+        if not engine[prev(i)]['value']:
+          engine[next(i)]['pin'].set()
+          engine[next(i)]['value'] = 1
+          return
+  
+  engine[0]['pin'].set()
+  engine[0]['value'] = 1
 
-def goStep(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do przodu, lewy silnik kręci się przeciwnie do ruchu wskazówek zegara, prawy zgodnie z ruchem wskazówek zegara
-  for x in range(8):
-    L_1.clear()
-    L_2.clear()
-    L_3.clear()
-    L_4.set()
-
-    R_1.set()
-    R_2.clear()
-    R_3.clear()
-    R_4.set()
-
+def goStep(backwards = False): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do przodu, lewy silnik kręci się przeciwnie do ruchu wskazówek zegara, prawy zgodnie z ruchem wskazówek zegara
+  
+  for i in range(8):
+    goPinStep(LEFT, backwards)
+    goPinStep(RIGHT, not backwards)
     msleep(MOTOR_DELAY)
+    #print(engine[0]['value'], engine[1]['value'], engine[2]['value'], engine[3]['value'])
 
-    L_3.set()
+        
 
-    R_4.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_4.clear()
-
-    R_2.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_2.set()
-
-    R_1.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_3.clear()
-
-    R_3.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_1.set()
-
-    R_2.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_2.clear()
-
-    R_4.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_4.set()
-
-    R_3.clear()
-
-    msleep(MOTOR_DELAY)
-
-def goStepBackwards(): # funkcja odpowiedzialna za obrót silników o 5.625 stopni w celu jazdy do tyłu, lewy silnik kręci się zgodnie z ruchem wskazówek zegara, prawy przeciwnie do ruchu wskazówek zegara
-
-  for x in range(8):
-    R_1.clear()
-    R_2.clear()
-    R_3.clear()
-    R_4.set()
-
-    L_1.set()
-    L_2.clear()
-    L_3.clear()
-    L_4.set()
-
-    msleep(MOTOR_DELAY)
-
-    R_3.set()
-
-    L_4.clear()
-
-    msleep(MOTOR_DELAY)
-
-    R_4.clear()
-
-    L_2.set()
-
-    msleep(MOTOR_DELAY)
-
-    R_2.set()
-
-    L_1.clear()
-
-    msleep(MOTOR_DELAY)
-
-    R_3.clear()
-
-    L_3.set()
-
-    msleep(MOTOR_DELAY)
-
-    R_1.set()
-
-    L_2.clear()
-
-    msleep(MOTOR_DELAY)
-
-    R_2.clear()
-
-    L_4.set()
-
-    msleep(MOTOR_DELAY)
-
-    R_4.set()
-
-    L_3.clear()
-
-    msleep(MOTOR_DELAY)
-
-def spinCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
+def spin(steps, clockwise = True, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
   for y in range(0,steps):
     if prog:
       prog(y, steps)
-    L_1.set()
-    L_2.clear()
-    L_3.clear()
-    L_4.set()
-
-    R_1.set()
-    R_2.clear()
-    R_3.clear()
-    R_4.set()
-
+    for engine in (LEFT, RIGHT):
+      goPinStep(engine, clockwise)
     msleep(MOTOR_DELAY)
-
-    L_4.clear()
-
-    R_4.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_2.set()
-
-    R_2.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_1.clear()
-
-    R_1.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_3.set()
-
-    R_3.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_2.clear()
-
-    R_2.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_4.set()
-
-    R_4.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_3.clear()
-
-    R_3.clear()
-
-    msleep(MOTOR_DELAY)
-
-def spinCCW(steps, prog = None): #funkcja odpowiedzialna za kręcenie się zgodnie z ruchem wskazówek zegara (prawo) o zadaną liczbę kroków (serii po 8 kroków)
-  for y in range(0,steps):
-    if prog:
-      prog(y, steps)
-    L_1.clear()
-    L_2.clear()
-    L_3.clear()
-    L_4.set()
-
-    R_1.clear()
-    R_2.clear()
-    R_3.clear()
-    R_4.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_3.set()
-
-    R_3.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_4.clear()
-
-    R_4.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_2.set()
-
-    R_2.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_3.clear()
-
-    R_3.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_1.set()
-
-    R_1.set()
-
-    msleep(MOTOR_DELAY)
-
-    L_2.clear()
-
-    R_2.clear()
-
-    msleep(MOTOR_DELAY)
-
-    L_4.set()
-
-    R_4.set()
-
-    msleep(MOTOR_DELAY)
-
+    
 def clearPins(): #wyczyszczenie wszystkich pinów
-  L_1.clear()
-  L_2.clear()
-  L_3.clear()
-  L_4.clear()
-  R_1.clear()
-  R_2.clear()
-  R_3.clear()
-  R_4.clear()
+  for engine in (LEFT, RIGHT):
+    for i in engine:
+      i['value'] = 0
+      i['pin'].clear()
   MAZAK_UP.clear()
   MAZAK_DOWN.clear()
   END.clear()
@@ -334,6 +147,7 @@ def progress(i, lines):
 def countTime(filename):
 
   mazak_lifted = False
+  backwards = False
 
   p1 = Vector2D(0.0,0.0)
   p3 = Vector2D(0.0,-1.0)
@@ -354,27 +168,25 @@ def countTime(filename):
       pom = Vector2D.angleFromPoints(p1,p2,p3)
 
       if abs(pom) > math.pi/2:
-        pom -= math.pi/2 * abs(pom)/pom
-        pom *= -1
-        backwards = True
-      else:
-        backwards = False
+        if pom > 0:
+          pom = - math.pi + pom
+        else:
+          pom = math.pi + pom
+        backwards = not backwards
 
       st = stepsForRotation(math.fabs(pom))
 
-      time += st * 8 * MOTOR_DELAY
-      time += 64 * MOTOR_DELAY
+      time += (int(st)+8) * MOTOR_DELAY
       p3 = p1
       p1 = p2
     elif line.find('PODNIES') != -1:
-      time += 25
+      time += 100
     elif line.find('OPUSC') != -1:
-      time += 50
+      time += 100
     line = fd.readline()
     i+=1
 
-  time += 500
-  return time*1.125/1000.0*SPEED_MOD()
+  return time/800.0*SPEED_MOD()
 
 
 def draw(filename):
@@ -396,23 +208,23 @@ def draw(filename):
   try:
     while line:
       if line.find('START') != -1:
-        print("[%3d%%] Początek rysowania" % progress(i,lines))
+        print("[%3d%%] Początek rysowania" % progress(i,lines), end='\r')
         liftMazak(100)
         dropMazak(100)
         liftMazak()
         mazak_lifted = True
       elif line.find('OPUSC') != -1:
-        print("[%3d%%] Żądanie opuszczenia mazaka..." % progress(i,lines))
+        print("[%3d%%] Żądanie opuszczenia mazaka...                                                         " % progress(i,lines), end='\r')
         if mazak_lifted:
           dropRequest = True
         mazak_lifted = False
       elif line.find('PODNIES') != -1:
-        print("[%3d%%] Podnoszenie mazaka..." % progress(i,lines))
+        print("[%3d%%] Podnoszenie mazaka...                                                                 " % progress(i,lines), end='\r')
         if not mazak_lifted:
           liftMazak()
         mazak_lifted = True
       elif line.find('KONIEC') != -1:
-        print("[%3d%%] Koniec rysowania" % progress(i,lines))
+        print("[%3d%%] Koniec rysowania                                                                       " % progress(i,lines))
         if not mazak_lifted:
           liftMazak()
         dropMazak()
@@ -442,24 +254,18 @@ def draw(filename):
         etaLeft = int(eta - time.time() + start_time)
         if etaLeft < 0:
           etaLeft = 0
-        print("[%3d%%] %s do %s do punktu %.2f %.2f (ETA: %dm)" % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', 'tyłu' if backwards else 'przodu', x, y, int(etaLeft/60)))
+        print("[%3d%%] %s do %s do punktu %.2f %.2f (ETA: %dm)                                               " % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', 'tyłu' if backwards else 'przodu', x, y, int(etaLeft/60)), end='\r')
 
         if st > 0 :
-          def prog(i, max):
-            print(" - kroków: %d*8=%d, kąt: %.2f (%d%%)" % (st, st*8, pom, int(100*i/max)), end='\r')
-          if pom > 0:
-            spinCCW(int(st), prog)
-          elif pom < 0:
-            spinCW(int(st), prog)
-        print (" - step                                            ", end='\r') # yes, it's ugly :D
+          def prog(a, max):
+            print("[%3d%%] %s do %s do punktu %.2f %.2f [obrót: %.2f/%d (%d%%)] (ETA: %dm)" % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', 'tyłu' if backwards else 'przodu', x, y, pom, int(st), int(100*a/max), int(etaLeft/60)), end='\r')
+          spin(int(st), pom < 0, prog)
+        #print (" - step                                            ", end='\r') # yes, it's ugly :D
         if dropRequest:
-          print("[%3d%%] Opuszczanie mazaka..." % progress(i,lines))
+          print("[%3d%%] Opuszczanie mazaka...                                                                   " % progress(i,lines), end='\r')
           dropMazak()
           dropRequest = False
-        if backwards:
-          goStepBackwards()
-        else:
-          goStep()
+        goStep(backwards)
         p3 = p1
         p1 = p2
 
@@ -467,7 +273,7 @@ def draw(filename):
       i+=1
 
   except KeyboardInterrupt:
-    print("Czyszczenie pinów...                                ") # uuuuglyyyy
+    print("[%3d%%] Czyszczenie pinów...                                                                       " % progress(i,lines)) # uuuuglyyyy
     liftMazak(100)
     clearPins()
     raise KeyboardInterrupt
@@ -518,7 +324,17 @@ if __name__ == "__main__":
   R_2 = port.get_pin(3)
   R_3 = port.get_pin(2)
   R_4 = port.get_pin(1)
-
+  
+  LEFT.append({'pin': L_1, 'value': 0})
+  LEFT.append({'pin': L_2, 'value': 0})
+  LEFT.append({'pin': L_3, 'value': 0})
+  LEFT.append({'pin': L_4, 'value': 0})
+  RIGHT.append({'pin': R_1, 'value': 0})
+  RIGHT.append({'pin': R_2, 'value': 0})
+  RIGHT.append({'pin': R_3, 'value': 0})
+  RIGHT.append({'pin': R_4, 'value': 0})
+  
+  
   MAZAK_UP = port.get_pin(16) #mazakowego silnika
   MAZAK_DOWN = port.get_pin(17)
 
