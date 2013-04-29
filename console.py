@@ -3,7 +3,7 @@ import os, code, sys
 
 from sterowator import *
 
-port = mazakodron.Port(simulator = False, lpt = False)
+port = mazakodron.Port(simulator = False, lpt = True)
 
 #zmienne z pinami
 L_1 = port.get_pin(9) #Lewego silnika

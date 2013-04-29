@@ -5,21 +5,23 @@ class Pin():
 
   pin = None
   id = None
+  port = None
   
-  def __init__(self, id):
+  def __init__(self, port, id):
     self.id = id
+    self.port = port
     if parapin:
-      self.pin = Pin(id)
+      self.pin = port.get_pin(id)
   
   def set(self):
-    if self.pin:
-      pin.set()
+    if self.pin is not None:
+      self.pin.set()
     if symulator:
       symulator.setPin(self.id)
   
   def clear(self):
-    if self.pin:
-      pin.clear()
+    if self.pin is not None:
+      self.pin.clear()
     if symulator:
       symulator.clearPin(self.id)
   
@@ -46,14 +48,14 @@ class Port():
         print("UWAGA: Nie można załadować modułu symulatora, wizualizacja została wyłączona!")
 
     if parapin:
-      self.port = Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN14|LP_PIN16|LP_PIN17);
+      self.port = parapin.Port(LPT1, outmode=LP_PIN01|LP_DATA_PINS|LP_PIN14|LP_PIN16|LP_PIN17);
 
   def show(self):
     if symulator:
       symulator.open()
 
   def get_pin(self, id):
-    return Pin(id)
+    return Pin(self.port, id)
 
   def wait(self):
     if symulator:

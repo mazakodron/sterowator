@@ -18,7 +18,7 @@ WHEEL_R = 18.0 #promien koła (w milimetrach)
 ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/4096.0 #obrót osi silnika przy wykonaniu jednego kroku
 
-MOTOR_DELAY = 1.0 #opóźnienie między krokami w milisekundach
+MOTOR_DELAY = 0.75 #opóźnienie między krokami w milisekundach
 
 SPEED = 1.0
 SPEED_MOD = lambda: 0 if SPEED==0 else 1/SPEED
@@ -130,9 +130,14 @@ def liftMazak(t = 25): #podniesienie mazaka
 
 def dropMazak(t = 50): #opuszczenie mazaka
   MAZAK_UP.clear()
-  MAZAK_DOWN.set()
+  for a in range(200):
+    MAZAK_DOWN.set()
+    msleep(0.5)
+    MAZAK_DOWN.clear()
+    msleep(3)
+  #MAZAK_DOWN.set()
 
-  msleep(t)
+  #msleep(t)
 
   MAZAK_DOWN.clear()
 
@@ -274,7 +279,7 @@ def draw(filename):
 
   except KeyboardInterrupt:
     print("[%3d%%] Czyszczenie pinów...                                                                       " % progress(i,lines)) # uuuuglyyyy
-    liftMazak(100)
+    liftMazak(500)
     clearPins()
     raise KeyboardInterrupt
 
