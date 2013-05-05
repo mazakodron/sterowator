@@ -245,8 +245,8 @@ def draw(filename):
         if abs(total_rotation) > max_rotation:
           pom = ( abs(total_rotation) - max_rotation ) // single_rotation
           def prog(a,max):
-            print("[%3d%%] Rozplątywanie kabli... [obrót: %.2f/%d (%d%%)] (ETA: %dm)                     " % (progress(i,lines), int((1+pom)*single_rotation), int(100*a/max), int(etaLeft/60)), end='\r')
-          spin( int((1+pom) * single_rotation) , total_rotation < 0)
+            print("[%3d%%] Rozplątywanie kabli... [%d%%] (ETA: %dm)                     " % (progress(i,lines), int(100*a/max), int(etaLeft/60)), end='\r')
+          spin( int((1+pom) * single_rotation) , total_rotation < 0, prog)
       elif line.find('KONIEC') != -1:
         print("[%3d%%] Koniec rysowania                                                                       " % progress(i,lines))
         if not mazak_lifted:
