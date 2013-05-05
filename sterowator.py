@@ -18,7 +18,7 @@ WHEEL_R = 18.0 #promien koła (w milimetrach)
 ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/4096.0 #obrót osi silnika przy wykonaniu jednego kroku
 
-MOTOR_DELAY = 0.75 #opóźnienie między krokami w milisekundach
+MOTOR_DELAY = 0.8 #opóźnienie między krokami w milisekundach
 
 SPEED = 1.0
 SPEED_MOD = lambda: 0 if SPEED==0 else 1/SPEED
@@ -108,16 +108,17 @@ def goStep(backwards = False): # funkcja odpowiedzialna za obrót silników o 5.
         
 
 def spin(steps, clockwise = True, prog = None): #funkcja odpowiedzialna za kręcenie się przeciwnie do ruchem wskazówek zegara (lewo) o zadaną liczbę kroków (serii po 8 kroków)
-  for y in range(0,steps):
+  global total_rotation
+  for y in range(0,int(steps)):
     if prog:
       prog(y, steps)
     for engine in (LEFT, RIGHT):
       goPinStep(engine, clockwise)
     msleep(MOTOR_DELAY)
-    if clockwise:
-      total_rotation = total_rotation + steps
-    else:
-      total_rotation = total_rotation - steps
+  if clockwise:
+    total_rotation = total_rotation + steps
+  else:
+    total_rotation = total_rotation - steps
     
 def clearPins(): #wyczyszczenie wszystkich pinów
   for engine in (LEFT, RIGHT):
@@ -204,6 +205,8 @@ def countTime(filename):
 
 def draw(filename):
 
+  global single_rotation, max_rotation, total_rotation
+
   p1 = Vector2D(0.0,0.0)
   p3 = Vector2D(0.0,-1.0)
   p2 = Vector2D(0.0,0.0)
@@ -241,7 +244,9 @@ def draw(filename):
         mazak_lifted = True
         if abs(total_rotation) > max_rotation:
           pom = ( abs(total_rotation) - max_rotation ) // single_rotation
-          spin( (1+pom) * single_rotation , total_rotation < 0)
+          def prog(a,max):
+            print("[%3d%%] Rozplątywanie kabli... [obrót: %.2f/%d (%d%%)] (ETA: %dm)                     " % (progress(i,lines), int((1+pom)*single_rotation), int(100*a/max), int(etaLeft/60)), end='\r')
+          spin( int((1+pom) * single_rotation) , total_rotation < 0)
       elif line.find('KONIEC') != -1:
         print("[%3d%%] Koniec rysowania                                                                       " % progress(i,lines))
         if not mazak_lifted:
@@ -277,7 +282,7 @@ def draw(filename):
 
         if st > 0 :
           def prog(a, max):
-            print("[%3d%%] %s do %s do punktu %.2f %.2f [obrót: %.2f/%d (%d%%)] (ETA: %dm)" % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', 'tyłu' if backwards else 'przodu', x, y, pom, int(st), int(100*a/max), int(etaLeft/60)), end='\r')
+            print("[%3d%%] %s do %s do punktu %.2f %.2f [obrót: %.2f/%d (%d%%)] (ETA: %dm)      " % (progress(i,lines), 'Jadę' if mazak_lifted else 'Rysuję', 'tyłu' if backwards else 'przodu', x, y, pom, int(st), int(100*a/max), int(etaLeft/60)), end='\r')
           spin(int(st), pom < 0, prog)
         #print (" - step                                            ", end='\r') # yes, it's ugly :D
         if dropRequest:
