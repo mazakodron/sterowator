@@ -240,8 +240,8 @@ def draw(filename):
           liftMazak()
         mazak_lifted = True
         if abs(total_rotation) > max_rotation:
-          pom = (total_rotation-max_rotation)//single_rotation
-          spin( (1+pom)*single_rotation, total_rotation < 0)
+          pom = ( abs(total_rotation) - max_rotation ) // single_rotation
+          spin( (1+pom) * single_rotation , total_rotation < 0)
       elif line.find('KONIEC') != -1:
         print("[%3d%%] Koniec rysowania                                                                       " % progress(i,lines))
         if not mazak_lifted:
