@@ -26,8 +26,8 @@ SPEED_MOD = lambda: 0 if SPEED==0 else 1/SPEED
 mazak_lifted = False
 backwards = False
 
-single_rotation
-max_rotation
+single_rotation = 0
+max_rotation = 0
 total_rotation = 0
 
 LEFT = []
