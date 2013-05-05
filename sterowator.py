@@ -26,6 +26,10 @@ SPEED_MOD = lambda: 0 if SPEED==0 else 1/SPEED
 mazak_lifted = False
 backwards = False
 
+single_rotation
+max_rotation
+total_rotation = 0
+
 LEFT = []
 RIGHT = []
 
@@ -110,6 +114,10 @@ def spin(steps, clockwise = True, prog = None): #funkcja odpowiedzialna za kręc
     for engine in (LEFT, RIGHT):
       goPinStep(engine, clockwise)
     msleep(MOTOR_DELAY)
+    if clockwise:
+      total_rotation = total_rotation + steps
+    else:
+      total_rotation = total_rotation - steps
     
 def clearPins(): #wyczyszczenie wszystkich pinów
   for engine in (LEFT, RIGHT):
@@ -202,6 +210,9 @@ def draw(filename):
 
   dropRequest = False
   backwards = False
+  
+  single_rotation = stepsForRotation(2*math.pi)
+  max_rotation = stepsForRotation(3*math.pi)
 
   clearPins()
 
@@ -228,6 +239,9 @@ def draw(filename):
         if not mazak_lifted:
           liftMazak()
         mazak_lifted = True
+        if abs(total_rotation) > max_rotation:
+          pom = (total_rotation-max_rotation)//single_rotation
+          spin( (1+pom)*single_rotation, total_rotation < 0)
       elif line.find('KONIEC') != -1:
         print("[%3d%%] Koniec rysowania                                                                       " % progress(i,lines))
         if not mazak_lifted:
