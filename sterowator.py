@@ -98,12 +98,12 @@ def goPinStep(engine, forward = True):    #przejście na pinach silnika w kolejn
   engine[0]['value'] = 1
 
 def goStep(backwards = False): 
-''' 
+  '''
     funkcja odpowiedzialna za przejazd robota do przodu o jedną jednostkę odległości obrót silników o ~0,7 stopni w przeciwnych kierunkach 
     odpowiada to wykonaniu serii 8 kroków
     jeżeli jedziemy do przodu lewy silnik kręci się w kierunku przeciwnym do ruchu wskazówek zegara a prawy zgodnie z nim
     przy jeździe do tył mamy odwrotną sytuację
-'''
+  '''
   for i in range(8):
     goPinStep(LEFT, backwards)   
     goPinStep(RIGHT, not backwards)
@@ -113,10 +113,9 @@ def goStep(backwards = False):
         
 
 def spin(steps, clockwise = True, prog = None): 
-'''
+  '''
     funkcja odpowiedzialna za kręcenie się robota w miejscu o zadaną liczbę kroków
-
-'''
+  '''
   global total_rotation
   for y in range(0,int(steps)):
     if prog:
