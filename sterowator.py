@@ -137,7 +137,7 @@ def clearPins(): #wyczyszczenie wszystkich pinów
   MAZAK_DOWN.clear()
   END.clear()
 
-def liftMazak(t = 25): #podniesienie mazaka
+def liftMazak(t = 40): #podniesienie mazaka
   MAZAK_DOWN.clear()
   MAZAK_UP.set()
 
@@ -145,16 +145,13 @@ def liftMazak(t = 25): #podniesienie mazaka
 
   MAZAK_UP.clear()
 
-def dropMazak(t = 50): #opuszczenie mazaka za pomocą serii krótkich sygnałów, pozwala to ogranicyć gwałtowność opuszczania i zapobiec odbijaniu mazaka od kartki
+def dropMazak(): #opuszczenie mazaka za pomocą serii krótkich sygnałów, pozwala to ogranicyć gwałtowność opuszczania i zapobiec odbijaniu mazaka od kartki
   MAZAK_UP.clear()
   for a in range(200):
     MAZAK_DOWN.set()
     msleep(0.5)
     MAZAK_DOWN.clear()
     msleep(3)
-  #MAZAK_DOWN.set()
-
-  #msleep(t)
 
   MAZAK_DOWN.clear()
 
@@ -237,7 +234,7 @@ def draw(filename):  #funkcja rysująca
       if line.find('START') != -1: #sygnalizuje początek rysowania - podnosi mazak na dobry początek
         print("[%3d%%] Początek rysowania" % progress(i,lines), end='\r')
         liftMazak(100)
-        dropMazak(100)
+        dropMazak()
         liftMazak()
         mazak_lifted = True
       elif line.find('OPUSC') != -1: #zapamiętuje żądanie opuszczenia mazaka - opuści go dopiero po wykonaniu obrotu robota
@@ -255,14 +252,11 @@ def draw(filename):  #funkcja rysująca
         #  def prog(a,max):
         #    print("[%3d%%] Rozplątywanie kabli... [%d%%] (ETA: %dm)                     " % (progress(i,lines), int(100*a/max), int(etaLeft/60)), end='\r')
         #  spin( int((1+pom) * single_rotation) , total_rotation < 0, prog)
+        # -- rozplątywanie kabli (obrót w przeciwną stronę po dojściu do pewnego limitu obrotów) zostało zakomentowane
+        #    gdyż było podejrzewane o zmniejszenie dokładności rysowania. Nie zostało to jednak dokładnie przetestowane.
       elif line.find('KONIEC') != -1: #stwierdza koniec rysowania - sygnalizuje to serią ruchów mazakiem
         print("[%3d%%] Koniec rysowania                                                                       " % progress(i,lines))
-        if not mazak_lifted:
-          liftMazak()
-        dropMazak()
-        liftMazak()
-        dropMazak()
-        liftMazak(100)
+        liftMazak(500)
         mazak_lifted = True
         END.set() #ustawia pin sygnalizujący koniec rysowania - sygnał dla symulatora
         break
