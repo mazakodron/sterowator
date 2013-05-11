@@ -18,7 +18,7 @@ WHEEL_R = 18.0 #promien koła (w milimetrach)
 ROBOT_R = 119.5 #odległosc między pisakiem a kołem - polowa odległosci rozstawu kol (w milimetrach)
 REV_STEP = 1.0/4096.0 #obrót osi silnika przy wykonaniu jednego kroku
 
-MOTOR_DELAY = 0.8 #opóźnienie między krokami w milisekundach
+MOTOR_DELAY = 1.5 #opóźnienie między krokami w milisekundach
 
 SPEED = 1.0
 SPEED_MOD = lambda: 0 if SPEED==0 else 1/SPEED
@@ -242,11 +242,11 @@ def draw(filename):
         if not mazak_lifted:
           liftMazak()
         mazak_lifted = True
-        if abs(total_rotation) > max_rotation:
-          pom = ( abs(total_rotation) - max_rotation ) // single_rotation
-          def prog(a,max):
-            print("[%3d%%] Rozplątywanie kabli... [%d%%] (ETA: %dm)                     " % (progress(i,lines), int(100*a/max), int(etaLeft/60)), end='\r')
-          spin( int((1+pom) * single_rotation) , total_rotation < 0, prog)
+        #if abs(total_rotation) > max_rotation:
+        #  pom = ( abs(total_rotation) - max_rotation ) // single_rotation
+        #  def prog(a,max):
+        #    print("[%3d%%] Rozplątywanie kabli... [%d%%] (ETA: %dm)                     " % (progress(i,lines), int(100*a/max), int(etaLeft/60)), end='\r')
+        #  spin( int((1+pom) * single_rotation) , total_rotation < 0, prog)
       elif line.find('KONIEC') != -1:
         print("[%3d%%] Koniec rysowania                                                                       " % progress(i,lines))
         if not mazak_lifted:

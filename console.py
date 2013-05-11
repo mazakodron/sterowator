@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import os, code, sys
 
-from sterowator import *
+import mazakodron
 
 port = mazakodron.Port(simulator = False, lpt = True)
+
+LEFT = []
+RIGHT = []
 
 #zmienne z pinami
 L_1 = port.get_pin(9) #Lewego silnika
@@ -25,6 +28,8 @@ RIGHT.append({'pin': R_4, 'value': 0})
 MAZAK_UP = port.get_pin(16) #mazakowego silnika
 MAZAK_DOWN = port.get_pin(17)
 END = port.get_pin(14)
+
+from sterowator import *
 
 def DebugKeyboard(banner="Debugger started (CTRL-D to quit)"):
 
